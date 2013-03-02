@@ -1,0 +1,9 @@
+/build/
+/dist/
+/extensions/
+/nbproject/private/
+*.bak.*
+*.class
+
+!/SmartDashboard.jar
+!/lib/networktables-desktop.jar
