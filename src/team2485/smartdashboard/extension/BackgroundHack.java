@@ -4,20 +4,19 @@ import edu.wpi.first.smartdashboard.gui.StaticWidget;
 import edu.wpi.first.smartdashboard.properties.Property;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
+import javax.swing.SwingUtilities;
 
 public class BackgroundHack extends StaticWidget {
-    public static final String NAME = "Background Hack";
+    public static final String NAME = "Layout > Background Hack";
     
     private Container parent;
 
     @Override
     public void init() {
         final BackgroundHack self = this;
-        this.addHierarchyListener(new HierarchyListener() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void hierarchyChanged(HierarchyEvent e) {
+            public void run() {
                 parent = self.getParent();
                 parent.setBackground(new Color(0x111111));
             }

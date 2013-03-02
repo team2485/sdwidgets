@@ -33,17 +33,24 @@ public class PotWidget extends Widget {
     }
 
     private void setPotValue(int potValue) {
-        this.valueText.setText("  " + potValue);
+        this.valueText.setText(String.format("  %03d", potValue));
     }
 
     private void setPotState(String potName) {
         labelText.setText(potName.toUpperCase() + "  ");
+        
+        Color fillColor;
+        
+        
         if (potName.toLowerCase().startsWith("manual"))
-            labelText.setBackground(new Color(255, 200, 0));
+            fillColor = new Color(50, 50, 255);
         else if (potName.toLowerCase().startsWith("auto"))
-            labelText.setBackground(new Color(10, 255, 10));
+            fillColor = new Color(146, 4, 255);
         else
-            labelText.setBackground(new Color(50, 50, 255));
+            fillColor = new Color(255, 153, 51);
+        
+        this.innerPanel.setBackground(fillColor);
+        this.labelText.setBackground(fillColor);
     }
     
     private void setReadyState(int ready) {
@@ -75,12 +82,21 @@ public class PotWidget extends Widget {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        innerPanel = new javax.swing.JPanel();
         labelText = new javax.swing.JLabel();
         valueText = new javax.swing.JLabel();
 
-        setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        setPreferredSize(new java.awt.Dimension(300, 50));
+        setMaximumSize(new java.awt.Dimension(32767, 56));
+        setMinimumSize(new java.awt.Dimension(303, 56));
+        setPreferredSize(new java.awt.Dimension(303, 56));
         setLayout(new java.awt.BorderLayout());
+
+        innerPanel.setBackground(new java.awt.Color(255, 153, 51));
+        innerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 0, 3, 3));
+        innerPanel.setMaximumSize(new java.awt.Dimension(2147483647, 50));
+        innerPanel.setMinimumSize(new java.awt.Dimension(300, 50));
+        innerPanel.setPreferredSize(new java.awt.Dimension(300, 50));
+        innerPanel.setLayout(new java.awt.BorderLayout());
 
         labelText.setBackground(new java.awt.Color(255, 153, 51));
         labelText.setFont(new java.awt.Font("BoomBox 2", 0, 18)); // NOI18N
@@ -89,17 +105,20 @@ public class PotWidget extends Widget {
         labelText.setText("FEEDER  ");
         labelText.setOpaque(true);
         labelText.setPreferredSize(new java.awt.Dimension(200, 50));
-        add(labelText, java.awt.BorderLayout.WEST);
+        innerPanel.add(labelText, java.awt.BorderLayout.CENTER);
 
         valueText.setBackground(new java.awt.Color(255, 255, 255));
         valueText.setFont(new java.awt.Font("BoomBox 2", 0, 24)); // NOI18N
         valueText.setText("  000");
         valueText.setOpaque(true);
         valueText.setPreferredSize(new java.awt.Dimension(100, 50));
-        add(valueText, java.awt.BorderLayout.EAST);
+        innerPanel.add(valueText, java.awt.BorderLayout.EAST);
+
+        add(innerPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel innerPanel;
     private javax.swing.JLabel labelText;
     private javax.swing.JLabel valueText;
     // End of variables declaration//GEN-END:variables

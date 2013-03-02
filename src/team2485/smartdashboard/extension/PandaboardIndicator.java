@@ -29,7 +29,7 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
             e.printStackTrace();
         }
         
-        final Dimension size = new Dimension(91, 100);
+        final Dimension size = new Dimension(95, 104);
         this.setSize(size);
         this.setPreferredSize(size);
         this.setMaximumSize(size);

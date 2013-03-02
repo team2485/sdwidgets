@@ -14,7 +14,6 @@ public class LogoConnectionIndicator extends StaticWidget implements IRemoteConn
     public static final String NAME = "Logo Connection Indicator";
     private BufferedImage disconnectedImage, connectedImage;
     
-    private boolean firstRun = true;
     private boolean connected = false;
     private Runnable repainter = new Runnable() {
         @Override
@@ -25,7 +24,7 @@ public class LogoConnectionIndicator extends StaticWidget implements IRemoteConn
 
     public LogoConnectionIndicator() {
         try {
-               this.connectedImage = ImageIO.read(LogoConnectionIndicator.class.getResourceAsStream("/team2485/smartdashboard/extension/res/logo-connected.png"));
+            this.   connectedImage = ImageIO.read(LogoConnectionIndicator.class.getResourceAsStream("/team2485/smartdashboard/extension/res/logo-connected.png"));
             this.disconnectedImage = ImageIO.read(LogoConnectionIndicator.class.getResourceAsStream("/team2485/smartdashboard/extension/res/logo-disconnected.png"));
         } catch (IOException e) {
             System.err.println("Error loading connection indicator images.");
@@ -64,21 +63,15 @@ public class LogoConnectionIndicator extends StaticWidget implements IRemoteConn
     public void connected(IRemote remote) {
         if (!connected) {
             connected = true;
-            if (!firstRun) {
-                SwingUtilities.invokeLater(repainter);
-            }
+            SwingUtilities.invokeLater(repainter);
         }
-        firstRun = false;
     }
 
     @Override
     public void disconnected(IRemote remote) {
         if (connected) {
             connected = false;
-            if (!firstRun) {
-                SwingUtilities.invokeLater(repainter);
-            }
+            SwingUtilities.invokeLater(repainter);
         }
-        firstRun = false;
     }
 }

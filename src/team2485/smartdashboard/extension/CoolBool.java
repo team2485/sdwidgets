@@ -50,20 +50,21 @@ public class CoolBool extends Widget {
     private void initComponents() {
 
         booleanDisplay = new javax.swing.JLabel();
-        filler = new javax.swing.Box.Filler(new java.awt.Dimension(15, 0), new java.awt.Dimension(15, 0), new java.awt.Dimension(15, 32767));
+        filler = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
         title = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(300, 300));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
         booleanDisplay.setIcon(this.falseImage);
-        booleanDisplay.setMaximumSize(new java.awt.Dimension(52, 52));
-        booleanDisplay.setMinimumSize(new java.awt.Dimension(52, 52));
-        booleanDisplay.setPreferredSize(new java.awt.Dimension(52, 52));
+        booleanDisplay.setMaximumSize(new java.awt.Dimension(40, 40));
+        booleanDisplay.setMinimumSize(new java.awt.Dimension(40, 40));
+        booleanDisplay.setPreferredSize(new java.awt.Dimension(40, 40));
         add(booleanDisplay);
         add(filler);
 
         title.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        title.setForeground(new java.awt.Color(255, 255, 255));
         title.setText("Field Name");
         add(title);
     }// </editor-fold>//GEN-END:initComponents

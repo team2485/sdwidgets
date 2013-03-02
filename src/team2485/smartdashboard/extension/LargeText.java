@@ -1,9 +1,13 @@
 package team2485.smartdashboard.extension;
 
+import edu.wpi.first.smartdashboard.gui.StaticWidget;
 import edu.wpi.first.smartdashboard.gui.Widget;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
-import javax.swing.border.TitledBorder;
+import java.awt.Color;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class LargeText extends Widget {
     public static final String NAME = "Large Text";
@@ -12,15 +16,26 @@ public class LargeText extends Widget {
     @Override
     public void init() {
         initComponents();
-        ((TitledBorder)this.getBorder()).setTitle(getFieldName());
+        this.titleLabel.setText(this.getFieldName());
+        
+        final JPanel self = this;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // force net border
+                self.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.white, 1, true),
+                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+            }
+        });
     }
     
     @Override
     public void setValue(Object o) {
         if (o instanceof Number)
-            valueField.setText((Number)o + "");
+            this.valueLabel.setText((Number)o + "");
         else if (o instanceof String)
-            valueField.setText((String)o);
+            this.valueLabel.setText((String)o);
     }
 
     @Override
@@ -36,18 +51,41 @@ public class LargeText extends Widget {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        valueField = new javax.swing.JTextField();
+        titleLabel = new javax.swing.JLabel();
+        valueLabel = new javax.swing.JLabel();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Label", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 14))); // NOI18N
-        setPreferredSize(new java.awt.Dimension(300, 300));
-        setLayout(new java.awt.BorderLayout());
+        setBackground(new java.awt.Color(17, 17, 17));
+        setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 1, true), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        setMaximumSize(new java.awt.Dimension(32767, 61));
+        setMinimumSize(new java.awt.Dimension(100, 61));
+        setOpaque(false);
+        setPreferredSize(new java.awt.Dimension(300, 61));
 
-        valueField.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        valueField.setText("000");
-        valueField.setToolTipText("");
-        add(valueField, java.awt.BorderLayout.CENTER);
+        titleLabel.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        titleLabel.setForeground(new java.awt.Color(255, 255, 255));
+        titleLabel.setText("Title");
+
+        valueLabel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        valueLabel.setForeground(new java.awt.Color(255, 255, 255));
+        valueLabel.setText("000");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(valueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(titleLabel)
+                .addGap(3, 3, 3)
+                .addComponent(valueLabel))
+        );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField valueField;
+    private javax.swing.JLabel titleLabel;
+    private javax.swing.JLabel valueLabel;
     // End of variables declaration//GEN-END:variables
 }
