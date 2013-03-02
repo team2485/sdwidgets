@@ -4,6 +4,7 @@ These can be used to add functionality and customize the look and feel of the
 default SmartDashboard.
 
 List of Widgets:
+
  - Background Hack
  - Cool Bool (better booleans)
  - Large Text
