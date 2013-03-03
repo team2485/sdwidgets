@@ -7,7 +7,7 @@ import java.awt.Container;
 import javax.swing.SwingUtilities;
 
 public class BackgroundHack extends StaticWidget {
-    public static final String NAME = "Layout > Background Hack";
+    public static final String NAME = "Layout > Background";
     
     private Container parent;
 
