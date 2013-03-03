@@ -53,7 +53,9 @@ public class CoolBool extends Widget {
         filler = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
         title = new javax.swing.JLabel();
 
-        setPreferredSize(new java.awt.Dimension(300, 300));
+        setMaximumSize(new java.awt.Dimension(500, 40));
+        setMinimumSize(new java.awt.Dimension(100, 40));
+        setPreferredSize(new java.awt.Dimension(200, 40));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
         booleanDisplay.setIcon(this.falseImage);
