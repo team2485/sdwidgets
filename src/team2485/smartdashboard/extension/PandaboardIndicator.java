@@ -19,6 +19,10 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
     
     private BufferedImage onImage, offImage;
     private boolean pandaboardOn = false;
+    
+    // the PuTTY installation directory containing putty.exe and sudohalt.txt
+    private static final String PUTTY_ROOT = "C:\\Program Files (x86)\\PuTTY";
+    
     @Override
     public void init() {
         try {
@@ -38,10 +42,15 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getClickCount() >= 2) sendHaltCommand();
+                // only allow when Pandaboard is already on and on double click
+                if (pandaboardOn && e.getClickCount() >= 2 &&
+                        JOptionPane.showConfirmDialog(null, "Are you sure you want to shutdown the Pandaboard?",
+                            "Smart Dashboard", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                    sendHaltCommand();
+                }
             }
         });
-        this.setToolTipText("Double-click to shutdown Pandaboard.");
+        this.setToolTipText("Pandaboard is not connected.");
     }
 
     @Override
@@ -72,10 +81,10 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
     private void sendHaltCommand() {
         try {
             // send the "sudo halt" command via PuTTY to the Pandaboard
-            Runtime.getRuntime().exec("\"C:\\Program Files (x86)\\PuTTY\\putty.exe\"", new String[] { "-ssh", "-m", "\"C:\\Program Files (x86)\\PuTTY\\sudohalt.txt\"", "root@10.24.85.72", "-pw" ,"Warlord10" });
+            Runtime.getRuntime().exec(new String[] { PUTTY_ROOT + "\\putty.exe", "-ssh", "-m", PUTTY_ROOT + "\\sudohalt.txt", "root@10.24.85.72", "-pw" ,"Warlord10" });
             pandaboardOn = false;
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error shutting down Pandaboard:\n" + e.getMessage(), "Pandaboard Indicator", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error shutting down Pandaboard:\n" + e.getMessage(), "Pandaboard Indicator", JOptionPane.ERROR_MESSAGE);
             System.err.println("Error shutting down Pandaboard.");
             e.printStackTrace();
         }
