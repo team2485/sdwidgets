@@ -66,6 +66,7 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
     public void setValue(Object o) {
         pandaboardOn = (Boolean)o;
         this.setToolTipText(pandaboardOn ? "Double-click to shutdown Pandaboard." : "Pandaboard is not connected.");
+        this.setCursor(pandaboardOn ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
         repaint();
     }
 
