@@ -4,6 +4,7 @@ import edu.wpi.first.smartdashboard.gui.StaticWidget;
 import edu.wpi.first.smartdashboard.properties.Property;
 import java.awt.Color;
 import java.awt.Container;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class BackgroundHack extends StaticWidget {
@@ -18,7 +19,16 @@ public class BackgroundHack extends StaticWidget {
             @Override
             public void run() {
                 parent = self.getParent();
+
+                // set background
                 parent.setBackground(new Color(0x111111));
+
+                // find the root frame
+                while (!(parent instanceof JFrame))
+                    parent = parent.getParent();
+
+                // maximize it
+                ((JFrame)parent).setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
     }

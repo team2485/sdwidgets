@@ -5,7 +5,7 @@ default SmartDashboard.
 
 List of Widgets:
 
- - Background Hack
+ - Background (maximizes window, sets background color)
  - Cool Bool (better booleans)
  - Large Text
  - Logo Connection Indicator
