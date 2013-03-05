@@ -40,14 +40,12 @@ public class PotWidget extends Widget {
         labelText.setText(potName.toUpperCase() + "  ");
         
         Color fillColor;
-        
-        
         if (potName.toLowerCase().startsWith("manual"))
-            fillColor = new Color(50, 50, 255);
-        else if (potName.toLowerCase().startsWith("auto"))
-            fillColor = new Color(146, 4, 255);
-        else
             fillColor = new Color(255, 153, 51);
+        else if (potName.toLowerCase().startsWith("auto"))
+            fillColor = new Color(169, 4, 255);
+        else
+            fillColor = new Color(9, 148, 2);
         
         this.innerPanel.setBackground(fillColor);
         this.labelText.setBackground(fillColor);
