@@ -4,19 +4,19 @@ import edu.wpi.first.smartdashboard.gui.*;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.Color;
-import javax.swing.border.LineBorder;
+import javax.swing.border.*;
 
 public class PotWidget extends Widget {
     public static final String NAME = "Pot Widget";
     public static final DataType[] TYPES = { DataType.STRING };
     
-    private static LineBorder state0, state1, state2;
+    private static Border state0, state1, state2;
 
     @Override
     public void setValue(Object o) {
         final String[] vals = ((String)o).split(",");
         this.setPotState(vals[0]);
-        this.setPotValue(Integer.parseInt(vals[1]));
+        this.setPotValue((int)Double.parseDouble(vals[1]));
         if (vals.length > 2) {
             this.setReadyState(Boolean.parseBoolean(vals[2]) ? 2 : 1);
         }
@@ -32,17 +32,14 @@ public class PotWidget extends Widget {
     public void propertyChanged(Property prprt) {
     }
 
-    private void setPotValue(int potValue) {
-        this.valueText.setText(String.format("  %03d", potValue));
-    }
-
     private void setPotState(String potName) {
         labelText.setText(potName.toUpperCase() + "  ");
         
         Color fillColor;
-        if (potName.toLowerCase().startsWith("manual"))
+        final String potLowerName = potName.toLowerCase();
+        if (potLowerName.startsWith("manual"))
             fillColor = new Color(255, 153, 51);
-        else if (potName.toLowerCase().startsWith("auto"))
+        else if (potLowerName.startsWith("auto"))
             fillColor = new Color(169, 4, 255);
         else
             fillColor = new Color(9, 148, 2);
@@ -50,23 +47,28 @@ public class PotWidget extends Widget {
         this.innerPanel.setBackground(fillColor);
         this.labelText.setBackground(fillColor);
     }
+
+    private void setPotValue(int potValue) {
+        // TODO: does this fail with 4-digit numbers?
+        this.valueText.setText(String.format("  %03d", potValue));
+    }
     
     private void setReadyState(int ready) {
         switch (ready) {
             case 0:
                 if (state0 == null)
-                    state0 = new LineBorder(Color.black, 1, true);
-                this.setBorder(state0);
+                    state0 = new EmptyBorder(0, 0, 0, 0);
+                this.valueText.setBorder(state0);
                 break;
             case 1:
                 if (state1 == null)
-                    state1 = new LineBorder(Color.red, 5, true);
-                this.setBorder(state1);
+                    state1 = new LineBorder(Color.red, 2);
+                this.valueText.setBorder(state1);
                 break;
             case 2:
                 if (state2 == null)
-                    state2 = new LineBorder(Color.green, 1, true);
-                this.setBorder(state2);
+                    state2 = new LineBorder(Color.green, 2);
+                this.valueText.setBorder(state2);
                 break;
         }
     }
