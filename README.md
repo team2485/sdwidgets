@@ -6,12 +6,14 @@ default SmartDashboard.
 List of Widgets:
 
  - Background (maximizes window, sets background color)
+ - Background Left/Right Sides (fancy background images)
  - Cool Bool (better booleans)
+ - Field Distance
  - Large Text
  - Logo Connection Indicator
  - Nyan Cats (static and data-driven)
- - Pandaboard Connection Indicator
- - Potentiometer
+ - Pandaboard Connection Indicator (happy panda)
+ - Potentiometer Value and Preset
 
 The Smart Dashboard widget JARs are generated in `extensions/` so that they can
 be easily tested by running `SmartDashboard.jar`, using the default extension
