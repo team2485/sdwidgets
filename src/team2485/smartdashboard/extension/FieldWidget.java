@@ -13,6 +13,8 @@ public class FieldWidget extends Widget {
     public static final DataType[] TYPES = { DataType.NUMBER };
 
     private BufferedImage fieldImage, fieldGradImage;
+    private Font font;
+    private String noDistanceString;
     private Shape clip;
     private KillableThread animationThread;
     private double distance = 0;
@@ -26,15 +28,18 @@ public class FieldWidget extends Widget {
             e.printStackTrace();
         }
 
-        final Dimension size = new Dimension(500, 225);
+        final Dimension size = new Dimension(500, 240);
         this.setSize(size);
         this.setPreferredSize(size);
         this.setMinimumSize(size);
         this.setMinimumSize(size);
 
+        this.font = new Font("BoomBox 2", Font.PLAIN, 20);
+        this.noDistanceString = "No distance";
+
         this.clip = new Polygon(
                 new int[] {  77, 421, 473, 473, 424, 424,  75,  75,  27,  27 },
-                new int[] {  32,  32,  62, 154, 183, 207, 206, 182, 153,  62 },
+                new int[] {  47,  47,  77, 169, 198, 223, 221, 197, 168,  77 },
                 10);
     }
 
@@ -82,13 +87,31 @@ public class FieldWidget extends Widget {
     protected void paintComponent(final Graphics gg) {
         Graphics2D g = (Graphics2D)gg;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.drawImage(this.fieldImage, 0, 0, null);
+        g.drawImage(this.fieldImage, 0, 15, null);
+        
+        final boolean inBounds = this.distance > 0 && this.distance <= 54;
+
+        // draw text
+        g.setFont(font);
+        if (this.distance == -1) {
+            g.setColor(Color.red);
+            g.drawString(noDistanceString, 250 - g.getFontMetrics().stringWidth(noDistanceString) / 2, 28);
+        }
+        else if (this.distance > 0) {
+            final String distanceString = String.format("%.2f", this.distance);
+            g.setColor(inBounds ? Color.white : Color.red);
+            g.drawString(distanceString, 250 - (g.getFontMetrics().stringWidth(distanceString) / 2), 28);
+        }
+        else {
+            g.setColor(Color.red);
+            g.fillRect(240, 20, 20, 3);
+        }
 
         // draw gradient
-        if (this.distance > 0 && this.distance <= 54) {
+        if (inBounds) {
             g.setClip(this.clip);
             final int x = 27 + (int)((this.distance / 52) * 430) - 23;
-            g.drawImage(this.fieldGradImage, x, 0, null);
+            g.drawImage(this.fieldGradImage, x, 15, null);
         }
     }
 

@@ -17,6 +17,28 @@
 		<property name="Camera IP Address" value="10.24.85.11"/>
 	</static-widget>
 
+	<!-- Left -->
+	<widget field="Potentiometer Average Value" type="Number" class="team2485.smartdashboard.extension.LargeText">
+		<location x="176" y="296"/>
+	</widget>
+	<widget field="Shooter Spinning" type="Boolean" class="team2485.smartdashboard.extension.CoolBool">
+		<location x="216" y="406"/>
+	</widget>
+	<widget field="Angler is at setpoint" type="Boolean" class="team2485.smartdashboard.extension.CoolBool">
+		<location x="216" y="466"/>
+	</widget>
+
+	<!-- Right -->
+	<widget field="Potentiometer Angler Widget" type="String" class="team2485.smartdashboard.extension.PotWidget">
+		<location x="1172" y="250"/>
+	</widget>
+	<widget field="Pandaboard Connected" type="Boolean" class="team2485.smartdashboard.extension.PandaboardIndicator">
+		<location x="1055" y="521"/>
+	</widget>
+	<widget field="Pandaboard Distance" type="Number" class="team2485.smartdashboard.extension.FieldWidget">
+		<location x="1074" y="320"/>
+	</widget>
+
 	<!-- Graph aligned with driver station -->
 	<widget field="Shooter Motor Voltage Values" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.LinePlot">
 		<location x="1024" y="617"/>
@@ -24,40 +46,9 @@
 		<height>200</height>
 	</widget>
 
-	<!-- Booleans -->
-	<widget field="Shooter Ready" type="Boolean" class="team2485.smartdashboard.extension.CoolBool">
-		<location x="1104" y="320"/>
-	</widget>
-	<widget field="Shooter Spinning" type="Boolean" class="team2485.smartdashboard.extension.CoolBool">
-		<location x="1104" y="384"/>
-	</widget>
-	<widget field="Angler is at setpoint" type="Boolean" class="team2485.smartdashboard.extension.CoolBool">
-		<location x="1104" y="448"/>
-	</widget>
-
-	<!-- Text boxes -->
-	<widget field="Pandaboard Connected" type="Boolean" class="team2485.smartdashboard.extension.PandaboardIndicator">
-		<location x="405" y="240"/>
-	</widget>
-	<widget field="Potentiometer Average Value" type="Number" class="team2485.smartdashboard.extension.LargeText">
-		<location x="196" y="256"/>
-	</widget>
-	<widget field="Pandaboard Distance" type="Number" class="team2485.smartdashboard.extension.LargeText">
-		<location x="196" y="336"/>
-	</widget>
-	<widget field="Encoder Wrapper pidGet()" type="Number" class="team2485.smartdashboard.extension.LargeText">
-		<location x="196" y="416"/>
-	</widget>
-	<widget field="Encoder Wrapper Output" type="Number" class="team2485.smartdashboard.extension.LargeText">
-		<location x="196" y="499"/>
-	</widget>
-
-	<!-- Etc -->
-	<widget field="Potentiometer Angler Widget" type="String" class="team2485.smartdashboard.extension.PotWidget">
-		<location x="1188" y="90"/>
-	</widget>
+	<!-- Test -->
 	<widget field="Kinect Setpoint" type="Number" class="team2485.smartdashboard.extension.LargeText">
-		<location x="196" y="643"/>
+		<location x="650" y="683"/>
 	</widget>
 
 	<!-- Background -->
