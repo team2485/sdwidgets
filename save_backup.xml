@@ -47,6 +47,9 @@
 	</widget>
 
 	<!-- Test -->
+	<widget field="Alliance" type="Boolean" class="team2485.smartdashboard.extension.HiddenField">
+		<location x="0" y="0"/>
+	</widget>
 	<widget field="Kinect Setpoint" type="Number" class="team2485.smartdashboard.extension.LargeText">
 		<location x="650" y="683"/>
 	</widget>

@@ -109,8 +109,13 @@ public class FieldWidget extends Widget {
 
         // draw gradient
         if (inBounds) {
+            int x;
+            if ((boolean)HiddenField.getField("Alliance")) // red
+                x = 472 - (int)((this.distance / 54) * 445) - 23;
+            else // blue
+                x =  27 + (int)((this.distance / 54) * 445) - 23;
+
             g.setClip(this.clip);
-            final int x = 27 + (int)((this.distance / 52) * 430) - 23;
             g.drawImage(this.fieldGradImage, x, 15, null);
         }
     }
