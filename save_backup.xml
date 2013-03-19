@@ -10,7 +10,7 @@
 		<height>20</height>
 		<property name="Graphics" value="Simple"/>
 	</static-widget>
-	<static-widget class="edu.wpi.first.smartdashboard.camera.WPICameraExtension">
+	<static-widget class="team2485.smartdashboard.extension.CenterCameraOverlay">
 		<location x="567" y="232"/>
 		<width>467</width>
 		<height>350</height>
