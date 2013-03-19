@@ -30,7 +30,8 @@
 
 	<!-- Right -->
 	<widget field="Potentiometer Angler Widget" type="String" class="team2485.smartdashboard.extension.PotWidget">
-		<location x="1172" y="250"/>
+		<location x="1170" y="250"/>
+		<width>360</width>
 	</widget>
 	<widget field="Pandaboard Connected" type="Boolean" class="team2485.smartdashboard.extension.PandaboardIndicator">
 		<location x="1055" y="521"/>

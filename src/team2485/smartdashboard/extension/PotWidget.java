@@ -4,13 +4,31 @@ import edu.wpi.first.smartdashboard.gui.*;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.Color;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.border.*;
 
 public class PotWidget extends Widget {
     public static final String NAME = "Pot Widget";
     public static final DataType[] TYPES = { DataType.STRING };
     
-    private static Border state0, state1, state2;
+    private ImageIcon trueImage, falseImage;
+
+    @Override
+    public void init() {
+        initComponents();
+
+        try {
+             this.trueImage = new ImageIcon(ImageIO.read(PandaboardIndicator.class.getResourceAsStream("/team2485/smartdashboard/extension/res/boolean-on.png")));
+            this.falseImage = new ImageIcon(ImageIO.read(PandaboardIndicator.class.getResourceAsStream("/team2485/smartdashboard/extension/res/boolean-off.png")));
+        } catch (IOException e) {
+            System.err.println("Error loading pot widget boolean images.");
+            e.printStackTrace();
+        }
+
+        this.readyDisplay.setIcon(this.falseImage);
+    }
 
     @Override
     public void setValue(Object o) {
@@ -21,11 +39,6 @@ public class PotWidget extends Widget {
             this.setReadyState(Boolean.parseBoolean(vals[2]) ? 2 : 1);
         }
         else this.setReadyState(0);
-    }
-
-    @Override
-    public void init() {
-        initComponents();
     }
 
     @Override
@@ -55,20 +68,12 @@ public class PotWidget extends Widget {
     
     private void setReadyState(int ready) {
         switch (ready) {
-            case 0:
-                if (state0 == null)
-                    state0 = new EmptyBorder(0, 0, 0, 0);
-                this.valueText.setBorder(state0);
+            case 2:
+                this.readyDisplay.setIcon(this.trueImage);
                 break;
             case 1:
-                if (state1 == null)
-                    state1 = new LineBorder(Color.red, 2);
-                this.valueText.setBorder(state1);
-                break;
-            case 2:
-                if (state2 == null)
-                    state2 = new LineBorder(Color.green, 2);
-                this.valueText.setBorder(state2);
+            case 0:
+                this.readyDisplay.setIcon(this.falseImage);
                 break;
         }
     }
@@ -82,6 +87,7 @@ public class PotWidget extends Widget {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        readyDisplay = new javax.swing.JLabel();
         innerPanel = new javax.swing.JPanel();
         labelText = new javax.swing.JLabel();
         valueText = new javax.swing.JLabel();
@@ -90,6 +96,13 @@ public class PotWidget extends Widget {
         setMinimumSize(new java.awt.Dimension(303, 56));
         setPreferredSize(new java.awt.Dimension(303, 56));
         setLayout(new java.awt.BorderLayout());
+
+        readyDisplay.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        readyDisplay.setMaximumSize(new java.awt.Dimension(50, 40));
+        readyDisplay.setMinimumSize(new java.awt.Dimension(50, 40));
+        readyDisplay.setPreferredSize(new java.awt.Dimension(50, 40));
+        add(readyDisplay, java.awt.BorderLayout.EAST);
+        readyDisplay.getAccessibleContext().setAccessibleName("");
 
         innerPanel.setBackground(new java.awt.Color(255, 153, 51));
         innerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 0, 3, 3));
@@ -120,6 +133,7 @@ public class PotWidget extends Widget {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel innerPanel;
     private javax.swing.JLabel labelText;
+    private javax.swing.JLabel readyDisplay;
     private javax.swing.JLabel valueText;
     // End of variables declaration//GEN-END:variables
 }

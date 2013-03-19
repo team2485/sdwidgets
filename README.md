@@ -9,11 +9,12 @@ List of Widgets:
  - Background Left/Right Sides (fancy background images)
  - Cool Bool (better booleans)
  - Field Distance
+ - Hidden Field (to store publicly-accessible data)
  - Large Text
  - Logo Connection Indicator
  - Nyan Cats (static and data-driven)
  - Pandaboard Connection Indicator (happy panda)
- - Potentiometer Value and Preset
+ - Potentiometer Value, Preset, and Ready Indicator
 
 The Smart Dashboard widget JARs are generated in `extensions/` so that they can
 be easily tested by running `SmartDashboard.jar`, using the default extension
