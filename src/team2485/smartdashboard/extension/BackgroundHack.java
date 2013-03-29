@@ -4,6 +4,7 @@ import edu.wpi.first.smartdashboard.gui.StaticWidget;
 import edu.wpi.first.smartdashboard.properties.Property;
 import java.awt.Color;
 import java.awt.Container;
+import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -31,9 +32,17 @@ public class BackgroundHack extends StaticWidget {
                 ((JFrame)parent).setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
+
+        focusDS();
     }
 
     @Override
     public void propertyChanged(Property prprt) {
+    }
+
+    public static void focusDS() {
+        try {
+            Runtime.getRuntime().exec("C:\\Program Files\\SmartDashboard\\extensions\\SDWindowFocusAssistant.exe");
+        } catch (IOException e) { }
     }
 }
