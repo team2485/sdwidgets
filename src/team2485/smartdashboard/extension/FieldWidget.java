@@ -12,44 +12,34 @@ public class FieldWidget extends Widget {
     public static final String NAME = "Field";
     public static final DataType[] TYPES = { DataType.NUMBER };
 
-    private BufferedImage fieldImage, fieldGradImage;
-    private Font font;
-    private String noDistanceString;
+    private BufferedImage fieldLabel, fieldGradImage;
     private Shape clip;
-    private KillableThread animationThread;
+    private FieldWidget.KillableThread animationThread;
     private double distance = 0;
+    
+    @Override
+    public void init() {
+        initComponents();
 
-    public FieldWidget() {
+        // Load images
         try {
-            this.fieldImage = ImageIO.read(FieldWidget.class.getResourceAsStream("/team2485/smartdashboard/extension/res/field.png"));
+            this.fieldLabel     = ImageIO.read(FieldWidget.class.getResourceAsStream("/team2485/smartdashboard/extension/res/field.png"));
             this.fieldGradImage = ImageIO.read(FieldWidget.class.getResourceAsStream("/team2485/smartdashboard/extension/res/field-gradient.png"));
         } catch (IOException e) {
             System.err.println("Error loading field images.");
             e.printStackTrace();
         }
 
-        final Dimension size = new Dimension(500, 240);
-        this.setSize(size);
-        this.setPreferredSize(size);
-        this.setMinimumSize(size);
-        this.setMinimumSize(size);
-
-        this.font = new Font("BoomBox 2", Font.PLAIN, 20);
-        this.noDistanceString = "No distance";
-
         this.clip = new Polygon(
-                new int[] {  77, 421, 473, 473, 424, 424,  75,  75,  27,  27 },
-                new int[] {  47,  47,  77, 169, 198, 223, 221, 197, 168,  77 },
-                10);
+            new int[] {  57, 232, 272, 272, 232,  57,  16,  16 },
+            new int[] {  20,  20,  76, 479, 536, 536, 479,  76 },
+            8);
     }
 
-    @Override
-    public void init() {
-    }
+    public void setDistance(double dist) {
+        final double newDistance = dist;
 
-    @Override
-    public void setValue(Object o) {
-        final double newDistance = ((Number)o).doubleValue();
+        this.valueField.setText(String.format("%.3f", newDistance));
 
         if (this.distance == 0) {
             // first time, so just set the distance
@@ -65,14 +55,14 @@ public class FieldWidget extends Widget {
                     try {
                         final double prevDistance = distance;
 
-                        final int duration = 1000, interval = 30,
+                        final int duration = 500, interval = 30,
                                 chunks = duration / interval;
                         final double chunkDiff = (newDistance - prevDistance) / chunks;
                         for (int t = 0; t < duration; t += interval) {
                             if (this.killed) return;
 
                             distance += chunkDiff;
-                            repaint();
+                            renderPanel.repaint();
 
                             Thread.sleep(interval);
                         }
@@ -83,40 +73,16 @@ public class FieldWidget extends Widget {
         }
     }
 
-    @Override
-    protected void paintComponent(final Graphics gg) {
+    private void paintFieldComponent(final Graphics gg) {
         Graphics2D g = (Graphics2D)gg;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.drawImage(this.fieldImage, 0, 15, null);
-        
-        final boolean inBounds = this.distance > 0 && this.distance <= 54;
-
-        // draw text
-        g.setFont(font);
-        if (this.distance == -1) {
-            g.setColor(Color.red);
-            g.drawString(noDistanceString, 250 - g.getFontMetrics().stringWidth(noDistanceString) / 2, 28);
-        }
-        else if (this.distance > 0) {
-            final String distanceString = String.format("%.2f", this.distance);
-            g.setColor(inBounds ? Color.white : Color.red);
-            g.drawString(distanceString, 250 - (g.getFontMetrics().stringWidth(distanceString) / 2), 28);
-        }
-        else {
-            g.setColor(Color.red);
-            g.fillRect(240, 20, 20, 3);
-        }
+        g.drawImage(this.fieldLabel, 0, 0, null);
 
         // draw gradient
-        if (inBounds) {
-            int x;
-            if ((boolean)HiddenField.getField("Alliance")) // red
-                x = 472 - (int)((this.distance / 54) * 445) - 23;
-            else // blue
-                x =  27 + (int)((this.distance / 54) * 445) - 23;
-
+        if (this.distance > 0 && this.distance <= 54) {
+            int y = 20 + (int)((this.distance / 54.0) * 516.0);
             g.setClip(this.clip);
-            g.drawImage(this.fieldGradImage, x, 15, null);
+            g.drawImage(this.fieldGradImage, 16, y - 23, null);
         }
     }
 
@@ -124,6 +90,123 @@ public class FieldWidget extends Widget {
     public void propertyChanged(Property prprt) {
     }
 
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        renderPanel = new javax.swing.JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                paintFieldComponent(g);
+            }
+        };
+        controlsPanel = new javax.swing.JPanel();
+        controlsInnerPanel = new javax.swing.JPanel();
+        valueField = new javax.swing.JLabel();
+        distanceConstLabel = new javax.swing.JLabel();
+        modeLabel = new javax.swing.JLabel();
+
+        setBackground(new java.awt.Color(17, 17, 17));
+        setOpaque(false);
+        setLayout(new java.awt.BorderLayout());
+
+        renderPanel.setMaximumSize(new java.awt.Dimension(288, 556));
+        renderPanel.setMinimumSize(new java.awt.Dimension(288, 556));
+        renderPanel.setOpaque(false);
+        renderPanel.setPreferredSize(new java.awt.Dimension(288, 556));
+
+        javax.swing.GroupLayout renderPanelLayout = new javax.swing.GroupLayout(renderPanel);
+        renderPanel.setLayout(renderPanelLayout);
+        renderPanelLayout.setHorizontalGroup(
+            renderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 288, Short.MAX_VALUE)
+        );
+        renderPanelLayout.setVerticalGroup(
+            renderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 556, Short.MAX_VALUE)
+        );
+
+        add(renderPanel, java.awt.BorderLayout.EAST);
+
+        controlsPanel.setOpaque(false);
+
+        controlsInnerPanel.setOpaque(false);
+
+        valueField.setFont(new java.awt.Font("BoomBox 2", 0, 24)); // NOI18N
+        valueField.setForeground(new java.awt.Color(255, 255, 255));
+        valueField.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        valueField.setText("-");
+
+        distanceConstLabel.setFont(new java.awt.Font("BoomBox 2", 0, 12)); // NOI18N
+        distanceConstLabel.setForeground(new java.awt.Color(255, 255, 255));
+        distanceConstLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        distanceConstLabel.setText("Distance");
+
+        modeLabel.setFont(new java.awt.Font("BoomBox 2", 0, 12)); // NOI18N
+        modeLabel.setForeground(new java.awt.Color(255, 255, 255));
+        modeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        modeLabel.setText("Auto");
+
+        javax.swing.GroupLayout controlsInnerPanelLayout = new javax.swing.GroupLayout(controlsInnerPanel);
+        controlsInnerPanel.setLayout(controlsInnerPanelLayout);
+        controlsInnerPanelLayout.setHorizontalGroup(
+            controlsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlsInnerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(controlsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(valueField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(distanceConstLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(modeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
+        );
+        controlsInnerPanelLayout.setVerticalGroup(
+            controlsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlsInnerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(modeLabel)
+                .addGap(1, 1, 1)
+                .addComponent(distanceConstLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(valueField)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout controlsPanelLayout = new javax.swing.GroupLayout(controlsPanel);
+        controlsPanel.setLayout(controlsPanelLayout);
+        controlsPanelLayout.setHorizontalGroup(
+            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(controlsInnerPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        controlsPanelLayout.setVerticalGroup(
+            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, controlsPanelLayout.createSequentialGroup()
+                .addContainerGap(302, Short.MAX_VALUE)
+                .addComponent(controlsInnerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(163, 163, 163))
+        );
+
+        add(controlsPanel, java.awt.BorderLayout.CENTER);
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel controlsInnerPanel;
+    private javax.swing.JPanel controlsPanel;
+    private javax.swing.JLabel distanceConstLabel;
+    private javax.swing.JLabel modeLabel;
+    private javax.swing.JPanel renderPanel;
+    private javax.swing.JLabel valueField;
+    // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void setValue(Object o) {
+        setDistance(((Number)o).doubleValue());
+    }
+    
     private class KillableThread extends Thread {
         protected boolean killed = false;
         public void kill() {
