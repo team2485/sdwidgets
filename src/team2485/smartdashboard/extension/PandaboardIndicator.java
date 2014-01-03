@@ -16,13 +16,13 @@ import javax.swing.JOptionPane;
 public class PandaboardIndicator extends Widget implements IRemoteConnectionListener {
     public static final String NAME = "Pandaboard Indicator";
     public static final DataType[] TYPES = { DataType.BOOLEAN };
-    
+
     private BufferedImage onImage, offImage;
     private boolean pandaboardOn = false;
-    
-    // the PuTTY installation directory containing putty.exe and sudohalt.txt
+
+    // the PuTTY installation directory containing putty.exe and sudopoweroff.txt
     private static final String PUTTY_ROOT = "C:\\Program Files (x86)\\PuTTY";
-    
+
     @Override
     public void init() {
         try {
@@ -32,13 +32,13 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
             System.err.println("Error loading Pandaboard indicator images.");
             e.printStackTrace();
         }
-        
+
         final Dimension size = new Dimension(95, 104);
         this.setSize(size);
         this.setPreferredSize(size);
         this.setMaximumSize(size);
         this.setMinimumSize(size);
-        
+
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -46,7 +46,7 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
                 if (pandaboardOn && e.getClickCount() >= 2 &&
                         JOptionPane.showConfirmDialog(null, "Are you sure you want to shutdown the Pandaboard?",
                             "Smart Dashboard", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-                    sendHaltCommand();
+                    sendPoweroffCommand();
                 }
             }
         });
@@ -61,7 +61,7 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
     protected void paintComponent(Graphics g) {
         g.drawImage(pandaboardOn ? onImage : offImage, 0, 0, null);
     }
-    
+
 //    @Override
     public void setValue(Object o) {
         pandaboardOn = (Boolean)o;
@@ -76,13 +76,13 @@ public class PandaboardIndicator extends Widget implements IRemoteConnectionList
 
     @Override
     public void disconnected(IRemote ir) {
-        sendHaltCommand();
+        sendPoweroffCommand();
     }
-    
-    private void sendHaltCommand() {
+
+    private void sendPoweroffCommand() {
         try {
-            // send the "sudo halt" command via PuTTY to the Pandaboard
-            Runtime.getRuntime().exec(new String[] { PUTTY_ROOT + "\\putty.exe", "-ssh", "-m", PUTTY_ROOT + "\\sudohalt.txt", "root@10.24.85.72", "-pw" ,"Warlord10" });
+            // send the "sudo poweroff" command via PuTTY to the Pandaboard
+            Runtime.getRuntime().exec(new String[] { PUTTY_ROOT + "\\putty.exe", "-ssh", "-m", PUTTY_ROOT + "\\sudopoweroff.txt", "root@10.24.85.72", "-pw" ,"Warlord10" });
             pandaboardOn = false;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error shutting down Pandaboard:\n" + e.getMessage(), "Pandaboard Indicator", JOptionPane.ERROR_MESSAGE);
