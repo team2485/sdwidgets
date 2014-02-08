@@ -3,15 +3,12 @@ package team2485.smartdashboard.extension;
 import edu.wpi.first.smartdashboard.gui.StaticWidget;
 import edu.wpi.first.smartdashboard.properties.Property;
 import java.awt.Color;
-import java.awt.Container;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class BackgroundHack extends StaticWidget {
     public static final String NAME = "Layout > Background";
-    
-    private Container parent;
 
     @Override
     public void init() {
@@ -19,17 +16,11 @@ public class BackgroundHack extends StaticWidget {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                parent = self.getParent();
-
                 // set background
-                parent.setBackground(new Color(0x111111));
-
-                // find the root frame
-                while (!(parent instanceof JFrame))
-                    parent = parent.getParent();
+                self.getParent().setBackground(new Color(0x212121));
 
                 // maximize it
-                ((JFrame)parent).setExtendedState(JFrame.MAXIMIZED_BOTH);
+                ((JFrame)SwingUtilities.getWindowAncestor(self)).setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
 

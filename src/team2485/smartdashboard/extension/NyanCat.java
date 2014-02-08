@@ -11,26 +11,23 @@ import javax.imageio.ImageIO;
 public class NyanCat extends Widget {
     public static final String NAME = "Nyan Cat (data)";
     public static final DataType[] TYPES = { DataType.NUMBER };
-    
+
     private Thread renderThread;
     private boolean shutdown = false;
     private long delayVal = 250;
     private int index = 0;
-    private BufferedImage images[];
-    
+    private BufferedImage image;
+
     @Override
     public void init() {
-        images = new BufferedImage[12];
-        for (int i=0; i<12; i++) {
-            try {
-                images[i] = ImageIO.read(NyanCat.class.getResourceAsStream("/team2485/smartdashboard/extension/res/poptart" + i + ".gif"));
-            } catch (IOException e) { }
-        }
-        
+        try {
+            image = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/poptart.png"));
+        } catch (IOException e) { }
+
         final Dimension size = new Dimension(400, 400);
         this.setSize(size);
         this.setPreferredSize(size);
-        
+
         renderThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -46,7 +43,7 @@ public class NyanCat extends Widget {
         }, "Nyan Render");
         renderThread.start();
     }
-    
+
     @Override
     public void setValue(Object o) {
        delayVal = 20 + ((Number)o).intValue() * 3;
@@ -55,12 +52,18 @@ public class NyanCat extends Widget {
     @Override
     public void propertyChanged(Property prprt) {
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         // draw centered, max bounds or 400px
-        final int width = Math.min(400, Math.min(this.getWidth(), this.getHeight()));
-        g.drawImage(this.images[index], this.getWidth() / 2 - width / 2, this.getHeight() / 2 - width / 2, width, width, null);
+        final int width = Math.min(400, Math.min(this.getWidth(), this.getHeight())),
+                  x = this.getWidth()  / 2 - width / 2,
+                  y = this.getHeight() / 2 - width / 2;
+        
+        g.drawImage(image,
+                x, y, x + width, y + width,
+                index * 400, 0, index * 400 + 400, 400,
+                null);
     }
 
     @Override
