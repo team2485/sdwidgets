@@ -114,10 +114,11 @@ public class Logger extends Widget {
             }
         });
 
-        final Dimension size = new Dimension(100, 33);
+        final Dimension size = new Dimension(100, 28);
         setSize(size);
         setPreferredSize(size);
         setMinimumSize(size);
+        setMaximumSize(new Dimension(300, 28));
 
         setBorder(new NiceBorder(Color.white, 1, 8));
 

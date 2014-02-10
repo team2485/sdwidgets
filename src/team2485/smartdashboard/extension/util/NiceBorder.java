@@ -15,7 +15,7 @@ public class NiceBorder extends AbstractBorder {
     private Insets insets = null;
     private BasicStroke stroke = null;
     private int strokePad;
-    
+
     private final RenderingHints hints;
 
     public NiceBorder(Color color, int thickness, int radius) {
@@ -28,9 +28,8 @@ public class NiceBorder extends AbstractBorder {
 
         hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int pad = radius + strokePad;
-        int bottomPad = pad + strokePad;
-        insets = new Insets(pad, pad, bottomPad, pad);
+        int pad = radius / 2 + strokePad;
+        insets = new Insets(pad, pad, pad, pad);
     }
 
     @Override
