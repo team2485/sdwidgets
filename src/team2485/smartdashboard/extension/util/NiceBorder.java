@@ -19,6 +19,10 @@ public class NiceBorder extends AbstractBorder {
     private final RenderingHints hints;
 
     public NiceBorder(Color color, int thickness, int radius) {
+        this(color, thickness, radius, radius / 2 + thickness / 2);
+    }
+
+    public NiceBorder(Color color, int thickness, int radius, int padding) {
         this.thickness = thickness;
         this.radius = radius;
         this.color = color;
@@ -28,9 +32,9 @@ public class NiceBorder extends AbstractBorder {
 
         hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int pad = radius / 2 + strokePad;
-        insets = new Insets(pad, pad, pad, pad);
+        insets = new Insets(padding, padding, padding, padding);
     }
+
 
     @Override
     public Insets getBorderInsets(Component c) {
