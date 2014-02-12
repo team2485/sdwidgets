@@ -2,6 +2,8 @@
 title SmartDashboard Debugger
 
 :start
+xcopy lib\*.dll . /Y
+
 echo Starting SmartDashboard...
 echo Press Ctrl+C to quit
 echo.
