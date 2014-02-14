@@ -12,7 +12,6 @@ Widgets
 | ----------------------------------------------------- | ----------------------------------  |
 | Autonomous mode chooser                               | `AutoChooser`                       |
 | Axis camera image processor                           | `AxisCameraProcessor2`              |
-| Background (maximizes window, sets background color)  | `BackgroundHack`                    |
 | Background left/right sides (fancy background images) | `BackgroundLeft`, `BackgroundRight` |
 | Battery voltage indicator                             | `BatteryWidget`                     |
 | Better booleans                                       | `CoolBool`                          |
@@ -20,7 +19,7 @@ Widgets
 | Field position/distance                               | `FieldWidget`                       |
 | Large text                                            | `LargeText`                         |
 | Robot data logger (saves logs to file)                | `Logger`                            |
-| Logo / robot connection indicator                     | `LogoConnectionIndicator`           |
+| Logo connection indicator and background setter       | `Logo`                              |
 | Nyan cats (static and data-driven)                    | `NyanCat`, `StaticNyanCat`          |
 | Pandaboard connection indicator (happy panda)         | `PandaboardIndicator`               |
 | Potentiometer value, reset, and ready state indicator | `PotWidget`                         |

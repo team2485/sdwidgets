@@ -26,7 +26,7 @@ public class BatteryWidget extends Widget {
     @Override
     public void init() {
         try {
-            battery = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/battery.png"));
+            battery = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/battery.png"));
         } catch (IOException e) { }
 
         final Dimension size = new Dimension(144, 83);
