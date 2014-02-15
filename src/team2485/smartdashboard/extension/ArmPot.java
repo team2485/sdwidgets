@@ -6,6 +6,7 @@ import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -15,8 +16,8 @@ public class ArmPot extends Widget {
     public static final DataType[] TYPES = {DataType.NUMBER};
 
     private static final double MIN_VAL = 2000, MAX_VAL = 3000;
-    public static int X = 250;
-    public static int Y = 250;
+    public static int X = 245;
+    public static int Y = 245;
     public int LX;
     public int LY;
     private int value = 0;
@@ -61,6 +62,20 @@ public class ArmPot extends Widget {
         this.add(new airtanksPanel());
         a = new String();
         //this.add(back);
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException ex) {
+//                        java.util.logging.Logger.getLogger(ArmPot.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                    value = (int)(10000*Math.random())  + 20000;
+//                    System.err.println("" + (int)(value));
+//                }
+//            }
+//        }).start
     }
 
     @Override
@@ -80,14 +95,13 @@ public class ArmPot extends Widget {
         //if (value == 0)
         // value = Math.random()*180;
         if ((value > 2759) && (value < 2781)) {
-            color = Color.GREEN;
-        } else if ((value > 2730) && (value < 2800)) {
+        } else if ((value > 2729) && (value < 2811)) {
             color = Color.orange;
         } else {
             color = Color.LIGHT_GRAY;
         }
-        LX = (int)(Math.cos((dec - 90) * Math.PI / 180)*-45);
-        LY = (int)(Math.sin((dec - 90) * Math.PI / 180)*-45);
+        LX = (int) (Math.cos((dec - 90) * Math.PI / 180) * -45);
+        LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -45);
 
         repaint();
     }
@@ -117,9 +131,9 @@ public class ArmPot extends Widget {
             }
             g.setColor(color);
             g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, 30));
-            g.drawString((int)dec + "°", LX, LY-10);
+            //g.fillOval(LX, LY, 10, 10);
+            g.drawString((int) dec + "°", (LX-22), (LY+15));
             g.translate(-X / 2, (-Y / 2));
-
 
         }
     }
