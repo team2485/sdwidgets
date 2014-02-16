@@ -1,10 +1,12 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
-import edu.wpi.first.smartdashboard.properties.BooleanProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -14,7 +16,7 @@ public class FieldWidget extends Widget {
     public static final String NAME = "Field 2014";
     public static final DataType[] TYPES = { DataType.STRING };
 
-    public final BooleanProperty nyanProperty = new BooleanProperty(this, "Nyan", false);
+    private NetworkTable table;
 
     // 24ft 8in x 54ft = 296in x 648in
     private static final int
@@ -35,10 +37,11 @@ public class FieldWidget extends Widget {
             ROBOT_WIDTH  = 25, // = 26 * REAL_WIDTH / FIELD_WIDTH
             ROBOT_HEIGHT = 29; // = 28 * REAL_HEIGHT / FIELD_HEIGHT
 
-    private BufferedImage fieldImage, greenImage, poptart;
+    private BufferedImage fieldImage, greenImage;
     private double
             positionX = 0.0, positionY = 0.0, rotation = 0.0,
-            distance = 27.0; // distance is in feet
+            distance = 27.0, // distance is in feet
+            destX, destY;
     private boolean inRange = false;
 
     @Override
@@ -47,11 +50,22 @@ public class FieldWidget extends Widget {
         try {
             this.fieldImage = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/field.png"));
             this.greenImage = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/field-green.png"));
-            this.poptart    = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/minipoptart.png"));
         } catch (IOException e) {
             System.err.println("Error loading field images.");
             e.printStackTrace();
         }
+
+        table = NetworkTable.getTable("SmartDashboard");
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                destX = (int)((e.getX() - FIELD_CENTERX) / FIELD_HALF_WIDTH  * REAL_HALF_WIDTH);
+                destY = (int)((e.getY() - FIELD_CENTERY) / FIELD_HALF_HEIGHT * REAL_HALF_HEIGHT);
+                table.putNumber("destinationX", destX);
+                table.putNumber("destinationY", destY);
+            }
+        });
 
         final Dimension size = new Dimension(522, 740);
         setSize(size);
@@ -137,9 +151,6 @@ public class FieldWidget extends Widget {
                     new int[] { (int)y - 25 - i * 12, (int)y - 30 - i * 12, (int)y - 25 - i * 12 }, 3);
         }
 
-//        if (nyanProperty.getValue()) {
-//            System.out.println("nyan");
-//        }
 //        g.drawLine(x, y - 20, x + 5, y - 15);
 //        g.drawLine(x, y - 20, x - 5, y - 15);
 //        g.drawLine(x, y - 30, x + 5, y - 25);
