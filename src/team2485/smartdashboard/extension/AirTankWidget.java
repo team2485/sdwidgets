@@ -20,6 +20,9 @@ public class AirTankWidget extends Widget {
     private double value = 70;
     private int drawWidth = 0;
     private Color color = Color.RED;
+    private double R;
+    private double G;
+    private double B;
 
     private BufferedImage airtank;
     private JLabel label;
@@ -42,14 +45,12 @@ public class AirTankWidget extends Widget {
 
         this.add(new airtankPanel(), BorderLayout.CENTER);
 
-
         label = new JLabel("UNKNOWN");
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setForeground(Color.LIGHT_GRAY);
         label.setFont(new java.awt.Font("Ubuntu", Font.BOLD, 15));
 
         this.add(label, BorderLayout.SOUTH);
-
 
     }
 
@@ -73,15 +74,27 @@ public class AirTankWidget extends Widget {
 
         @Override
         protected void paintComponent(final Graphics gg) {
-
+            if (value <= 60) {
+                R = 251;
+                G = 0;
+                B = 0;
+            } else if ((value > 60) && (value <= 90)) {
+                R = (255 - ((value - 60) * (.2)));
+                G = ((value - 60) * 4.367);
+                B = 0;
+            } else if ((value > 90) && (value <= 120)) {
+                R = (int) 255 - ((value - 90) * ((value - 90) / 3.66));
+                G = ((value - 90) * ((value - 90) / 14.05)) + 131;
+            }
+            color = (new java.awt.Color(((int) R), ((int) G), ((int) B)));
             final Graphics2D g = (Graphics2D) gg;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             if (drawWidth > 0) {
                 g.setColor(new java.awt.Color(100, 100, 100, 100));
-                g.fillRoundRect(5, 5,  MAX_DRAW_WIDTH, 50, 8, 8);
-                if (value>120)
-                    value=120;
-                color = (new java.awt.Color(((int)(255-(1/(value*value*.005) + (value)))), ((int)(((value*value*.005) + (value)))+25), ((int)(0.2*Math.abs((Math.abs((value)-70))-60)))));
+                g.fillRoundRect(5, 5, MAX_DRAW_WIDTH, 50, 8, 8);
+                if (value > 120) {
+                    value = 120;
+                }
                 g.setColor(color);
                 g.fillRoundRect(5, 5, drawWidth, 50, 8, 8);
 
