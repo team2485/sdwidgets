@@ -36,6 +36,10 @@ public class Logger extends Widget {
     public static final String NAME = "Logger";
     public static final DataType[] TYPES = { DataType.STRING };
 
+    static Object getLogger(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private JLabel label;
     private final ImageIcon expandIcon;
     private JCheckBoxMenuItem enabledMenuItem;

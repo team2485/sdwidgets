@@ -6,6 +6,8 @@ import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -17,7 +19,7 @@ public class AirTankWidget extends Widget {
     private static final double MAX_VAL = 120, MIN_VAL = 0;
     private static final int MAX_DRAW_WIDTH = 132;
 
-    private double value = 70;
+    private double value = 0;
     private int drawWidth = 0;
     private Color color = Color.RED;
     private double R;
@@ -51,7 +53,24 @@ public class AirTankWidget extends Widget {
         label.setFont(new java.awt.Font("Ubuntu", Font.BOLD, 15));
 
         this.add(label, BorderLayout.SOUTH);
-
+//        new Thread(new Runnable() {
+//
+//            @Override
+//            public void run(){
+//            while(true){
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(AirTankWidget.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                value ++;
+//                System.out.println(value);
+//                setValue(label);
+//                if (value > 120)
+//                    value = 0;
+//            }
+//        }
+//        }).start();
     }
 
     @Override
@@ -62,8 +81,8 @@ public class AirTankWidget extends Widget {
     public void setValue(Object o) {
         value = ((Number) o).doubleValue();
         label.setText(String.format("%.1f PSI", value));
-
         drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
+
         repaint();
     }
 
@@ -92,8 +111,8 @@ public class AirTankWidget extends Widget {
             if (drawWidth > 0) {
                 g.setColor(new java.awt.Color(100, 100, 100, 100));
                 g.fillRoundRect(5, 5, MAX_DRAW_WIDTH, 50, 8, 8);
-                if (value > 120) {
-                    value = 120;
+                if (drawWidth > MAX_DRAW_WIDTH) {
+                    drawWidth = MAX_DRAW_WIDTH;
                 }
                 g.setColor(color);
                 g.fillRoundRect(5, 5, drawWidth, 50, 8, 8);
