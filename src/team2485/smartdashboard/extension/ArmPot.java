@@ -96,10 +96,7 @@ public class ArmPot extends Widget {
             if (((rawPotVal / 10000) == 2) || (rawPotVal / 10000 == 3)) {
                 if (((rawPotVal % 10) == 1) || ((rawPotVal % 10) == 0)) {
                     spin = (int) (rawPotVal % 10);
-                    System.out.println(value);
-                    System.out.println(((rawPotVal / 10)));
-                    value = ((value * .6) + ((rawPotVal / 10) * .4));
-                    System.out.println(value);
+                    value = ((value * .8) + ((rawPotVal / 10) * .2));
                 }
             }
         }
