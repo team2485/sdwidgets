@@ -16,12 +16,12 @@ public class ArmPot extends Widget {
     public static final DataType[] TYPES = {DataType.NUMBER};
 
     private static final double MIN_VAL = 2000, MAX_VAL = 3000;
-    public static int X = 245;
-    public static int Y = 245;
+    public static int X = 244;
+    public static int Y = 244;
     public int LX;
     public int LY;
-    private double value = 0;
-    private int rawPotVal = 9999;
+    private double value = 2000;
+    private int rawPotVal = 25990;
     private double dec = 0;
     private int spin;
     private Color color;
@@ -62,19 +62,21 @@ public class ArmPot extends Widget {
         this.setLayout(layout);
 
         this.add(new airtanksPanel());
+
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {
 //                while (true) {
 //                    try {
-//                        Thread.sleep(10);
+//                        Thread.sleep(30);
 //                    } catch (InterruptedException ex) {
 //                    }
 //                    rawPotVal = rawPotVal + 10;
 //                    //System.out.println(value);
 //                    setValue(arm);
-//                    if (value > 3001) {
-//                        value = 2000;
+//                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
+//                    if (rawPotVal > 32001) {
+//                        rawPotVal = 20001;
 //                    }
 //                }
 //            }
@@ -92,14 +94,20 @@ public class ArmPot extends Widget {
             value = ((Number) o).intValue();
             value = (int) value / 10;
         }
+
         if (rawPotVal > 9999) {
             if (((rawPotVal / 10000) == 2) || (rawPotVal / 10000 == 3)) {
                 if (((rawPotVal % 10) == 1) || ((rawPotVal % 10) == 0)) {
+                    //System.out.println(value);
                     spin = (int) (rawPotVal % 10);
-                    value = ((value * .8) + ((rawPotVal / 10) * .2));
+
+                    value = ((value * .9) + ((rawPotVal / 10) * .1));
+                    //System.out.println(value);
                 }
             }
         }
+
+        dec = (value - 2427) / 4;
 
         if ((value > 2800) && (value < 2870)) {
             color = Color.orange;
@@ -111,10 +119,10 @@ public class ArmPot extends Widget {
             color = Color.green;
         }
         if (((rawPotVal / 10) > 2990) && ((rawPotVal / 10) < 3010)) {
-            value = 2835;
+            value = 3000;
             color = Color.yellow;
         }
-        dec = (value - 2427) / 4;
+
 
         repaint();
     }
@@ -145,7 +153,7 @@ public class ArmPot extends Widget {
             g.setFont(new java.awt.Font("Ubuntu", 0, 15));
             hyp = ((g.getFontMetrics().stringWidth(string) / 2) + 30);
             LX = (int) (Math.cos((dec - 90) * Math.PI / 180) * -50);
-            LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -50);
+            LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -40);
             g.setColor(Color.GREEN);
             g.drawString("°", (LX + g.getFontMetrics().stringWidth(string)), LY+5);
             g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, 30));
