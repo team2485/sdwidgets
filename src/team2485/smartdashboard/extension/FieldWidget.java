@@ -3,86 +3,151 @@ package team2485.smartdashboard.extension;
 import edu.wpi.first.smartdashboard.gui.*;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class FieldWidget extends Widget {
-    public static final String NAME = "Field";
-    public static final DataType[] TYPES = { DataType.NUMBER };
+    public static final String NAME = "Field 2014";
+    public static final DataType[] TYPES = { DataType.STRING };
 
-    private BufferedImage fieldLabel, fieldGradImage;
-    private Shape clip;
-    private FieldWidget.KillableThread animationThread;
-    private double distance = 0;
-    
+    private NetworkTable table;
+
+    // 24ft 8in x 54ft = 296in x 648in
+    private static final int
+            REAL_WIDTH  = 296,
+            REAL_HEIGHT = 648,
+            REAL_HALF_WIDTH  = REAL_WIDTH  / 2,
+            REAL_HALF_HEIGHT = REAL_HEIGHT / 2;
+
+    private static final double
+            FIELD_CENTERX = 211.0,
+            FIELD_CENTERY = 369.0,
+            FIELD_WIDTH   = 308.0,
+            FIELD_HEIGHT  = 607.0,
+            FIELD_HALF_WIDTH  = FIELD_WIDTH  * 0.5,
+            FIELD_HALF_HEIGHT = FIELD_HEIGHT * 0.5;
+
+    private static final int
+            ROBOT_WIDTH  = 25, // = 26 * REAL_WIDTH / FIELD_WIDTH
+            ROBOT_HEIGHT = 29; // = 28 * REAL_HEIGHT / FIELD_HEIGHT
+
+    private BufferedImage fieldImage, greenImage;
+    private double
+            positionX = 0.0, positionY = 0.0, rotation = 0.0,
+            distance = 27.0, // distance is in feet
+            destX, destY;
+    private boolean inRange = false;
+
     @Override
     public void init() {
-        initComponents();
-
         // Load images
         try {
-            this.fieldLabel     = ImageIO.read(FieldWidget.class.getResourceAsStream("/team2485/smartdashboard/extension/res/field.png"));
-            this.fieldGradImage = ImageIO.read(FieldWidget.class.getResourceAsStream("/team2485/smartdashboard/extension/res/field-gradient.png"));
+            this.fieldImage = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/field.png"));
+            this.greenImage = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/field-green.png"));
         } catch (IOException e) {
             System.err.println("Error loading field images.");
             e.printStackTrace();
         }
 
-        this.clip = new Polygon(
-            new int[] {  57, 232, 272, 272, 232,  57,  16,  16 },
-            new int[] {  20,  20,  76, 479, 536, 536, 479,  76 },
-            8);
+        table = NetworkTable.getTable("SmartDashboard");
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                destX = (int)((e.getX() - FIELD_CENTERX) / FIELD_HALF_WIDTH  * REAL_HALF_WIDTH);
+                destY = (int)((e.getY() - FIELD_CENTERY) / FIELD_HALF_HEIGHT * REAL_HALF_HEIGHT);
+                table.putNumber("destinationX", destX);
+                table.putNumber("destinationY", destY);
+            }
+        });
+
+        final Dimension size = new Dimension(522, 740);
+        setSize(size);
+        setPreferredSize(size);
+        setMinimumSize(size);
     }
 
-    public void setDistance(double dist) {
-        final double newDistance = dist;
+    public void setPosition(String position) {
+        final String[] split = position.split(",");
+        this.positionX = Double.parseDouble(split[0]);
+        this.positionY = Double.parseDouble(split[1]);
+        this.rotation  = Double.parseDouble(split[2]);
+        this.inRange   = Boolean.parseBoolean(split[3]);
 
-        this.valueField.setText(String.format("%.3f", newDistance));
+        // distance from the target in feet
+        this.distance = (REAL_HALF_HEIGHT - this.positionY) / 12;
 
-        if (this.distance == 0) {
-            // first time, so just set the distance
-            this.distance = newDistance;
-        }
-        else {
-            if (this.animationThread != null) this.animationThread.kill();
-
-            // start animation thread
-            this.animationThread = new KillableThread() {
-                @Override
-                public void run() {
-                    try {
-                        final double prevDistance = distance;
-
-                        final int duration = 500, interval = 30,
-                                chunks = duration / interval;
-                        final double chunkDiff = (newDistance - prevDistance) / chunks;
-                        for (int t = 0; t < duration; t += interval) {
-                            if (this.killed) return;
-
-                            distance += chunkDiff;
-                            renderPanel.repaint();
-
-                            Thread.sleep(interval);
-                        }
-                    } catch (InterruptedException e) { }
-                }
-            };
-            this.animationThread.start();
-        }
+        repaint();
     }
 
-    private void paintFieldComponent(final Graphics gg) {
+    @Override
+    protected void paintComponent(final Graphics gg) { // too easy
         Graphics2D g = (Graphics2D)gg;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.drawImage(this.fieldLabel, 0, 0, null);
 
-        // draw gradient
-        if (this.distance > 0 && this.distance <= 54) {
-            int y = 20 + (int)((this.distance / 54.0) * 516.0);
-            g.setClip(this.clip);
-            g.drawImage(this.fieldGradImage, 16, y - 23, null);
+        g.setColor(Color.white);
+        g.setFont(new Font("BoomBox 2", Font.PLAIN, 14));
+        g.drawString("Distance", 130 - g.getFontMetrics().stringWidth("Distance"), 300);
+        g.setFont(new Font("BoomBox 2", Font.PLAIN, 30));
+        final String distStr = String.format("%.1f", this.distance);
+        g.drawString(distStr, 130 - g.getFontMetrics().stringWidth(distStr), 300 + 35);
+
+        if (inRange) {
+            g.setColor(Color.green);
+            g.setFont(new Font("BoomBox 2", Font.PLAIN, 20));
+            g.drawString("IN RANGE", 130 - g.getFontMetrics().stringWidth("IN RANGE"), 420);
+        }
+
+        g.translate(100, 0);
+
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.drawImage(inRange ? this.greenImage : this.fieldImage, 0, 0, null);
+
+        // draw position
+        double x, y;
+        if (this.positionX > -REAL_HALF_WIDTH && this.positionX < REAL_HALF_WIDTH &&
+                this.positionY > -REAL_HALF_HEIGHT && this.positionY < REAL_HALF_HEIGHT) {
+            x = FIELD_CENTERX + (this.positionX / REAL_HALF_WIDTH) * FIELD_HALF_WIDTH;
+            y = FIELD_CENTERY - (this.positionY / REAL_HALF_HEIGHT) * FIELD_HALF_HEIGHT;
+
+            g.setColor(inRange ? Color.green : Color.red);
+        }
+        // or out of bounds
+        else {
+            if (this.positionX > REAL_HALF_WIDTH)
+                x = FIELD_CENTERX + FIELD_HALF_WIDTH;
+            else if (this.positionX < -REAL_HALF_WIDTH)
+                x = FIELD_CENTERX - FIELD_HALF_WIDTH;
+            else
+                x = FIELD_CENTERX + (this.positionX / REAL_HALF_WIDTH) * FIELD_HALF_WIDTH;
+
+            if (this.positionY > REAL_HALF_HEIGHT)
+                y = FIELD_CENTERY - FIELD_HALF_HEIGHT;
+            else if (this.positionY < -REAL_HALF_HEIGHT)
+                y = FIELD_CENTERY + FIELD_HALF_HEIGHT;
+            else
+                y = FIELD_CENTERY - (this.positionY / REAL_HALF_HEIGHT) * FIELD_HALF_HEIGHT;
+
+            g.setColor(Color.orange);
+        }
+
+        g.rotate((rotation) * Math.PI / 180, x, y);
+
+        g.setStroke(new BasicStroke(2));
+        g.draw(new Rectangle2D.Double(x - ROBOT_WIDTH / 2, y - ROBOT_WIDTH / 2, ROBOT_WIDTH, ROBOT_HEIGHT));
+        g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        for (int i = 0; i < 8; i++) {
+            g.setColor(new Color(255, 83, 13, 255 - i * 30));
+            // TODO: convert to Path2D.Double
+            g.fillPolygon(
+                    new int[] { (int)x - 5, (int)x, (int)x + 5 },
+                    new int[] { (int)y - 25 - i * 12, (int)y - 30 - i * 12, (int)y - 25 - i * 12 }, 3);
         }
     }
 
@@ -90,127 +155,8 @@ public class FieldWidget extends Widget {
     public void propertyChanged(Property prprt) {
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        renderPanel = new javax.swing.JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                paintFieldComponent(g);
-            }
-        };
-        controlsPanel = new javax.swing.JPanel();
-        controlsInnerPanel = new javax.swing.JPanel();
-        valueField = new javax.swing.JLabel();
-        distanceConstLabel = new javax.swing.JLabel();
-        modeLabel = new javax.swing.JLabel();
-
-        setBackground(new java.awt.Color(17, 17, 17));
-        setOpaque(false);
-        setLayout(new java.awt.BorderLayout());
-
-        renderPanel.setMaximumSize(new java.awt.Dimension(288, 556));
-        renderPanel.setMinimumSize(new java.awt.Dimension(288, 556));
-        renderPanel.setOpaque(false);
-        renderPanel.setPreferredSize(new java.awt.Dimension(288, 556));
-
-        javax.swing.GroupLayout renderPanelLayout = new javax.swing.GroupLayout(renderPanel);
-        renderPanel.setLayout(renderPanelLayout);
-        renderPanelLayout.setHorizontalGroup(
-            renderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 288, Short.MAX_VALUE)
-        );
-        renderPanelLayout.setVerticalGroup(
-            renderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 556, Short.MAX_VALUE)
-        );
-
-        add(renderPanel, java.awt.BorderLayout.EAST);
-
-        controlsPanel.setOpaque(false);
-
-        controlsInnerPanel.setOpaque(false);
-
-        valueField.setFont(new java.awt.Font("BoomBox 2", 0, 24)); // NOI18N
-        valueField.setForeground(new java.awt.Color(255, 255, 255));
-        valueField.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        valueField.setText("-");
-
-        distanceConstLabel.setFont(new java.awt.Font("BoomBox 2", 0, 12)); // NOI18N
-        distanceConstLabel.setForeground(new java.awt.Color(255, 255, 255));
-        distanceConstLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        distanceConstLabel.setText("Distance");
-
-        modeLabel.setFont(new java.awt.Font("BoomBox 2", 0, 12)); // NOI18N
-        modeLabel.setForeground(new java.awt.Color(255, 255, 255));
-        modeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        modeLabel.setText("Auto");
-
-        javax.swing.GroupLayout controlsInnerPanelLayout = new javax.swing.GroupLayout(controlsInnerPanel);
-        controlsInnerPanel.setLayout(controlsInnerPanelLayout);
-        controlsInnerPanelLayout.setHorizontalGroup(
-            controlsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(controlsInnerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(controlsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(valueField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(distanceConstLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
-                    .addComponent(modeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(20, 20, 20))
-        );
-        controlsInnerPanelLayout.setVerticalGroup(
-            controlsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(controlsInnerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(modeLabel)
-                .addGap(1, 1, 1)
-                .addComponent(distanceConstLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(valueField)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout controlsPanelLayout = new javax.swing.GroupLayout(controlsPanel);
-        controlsPanel.setLayout(controlsPanelLayout);
-        controlsPanelLayout.setHorizontalGroup(
-            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(controlsInnerPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        controlsPanelLayout.setVerticalGroup(
-            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, controlsPanelLayout.createSequentialGroup()
-                .addContainerGap(302, Short.MAX_VALUE)
-                .addComponent(controlsInnerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(163, 163, 163))
-        );
-
-        add(controlsPanel, java.awt.BorderLayout.CENTER);
-    }// </editor-fold>//GEN-END:initComponents
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel controlsInnerPanel;
-    private javax.swing.JPanel controlsPanel;
-    private javax.swing.JLabel distanceConstLabel;
-    private javax.swing.JLabel modeLabel;
-    private javax.swing.JPanel renderPanel;
-    private javax.swing.JLabel valueField;
-    // End of variables declaration//GEN-END:variables
-
     @Override
     public void setValue(Object o) {
-        setDistance(((Number)o).doubleValue());
-    }
-    
-    private class KillableThread extends Thread {
-        protected boolean killed = false;
-        public void kill() {
-            killed = true;
-        }
+        setPosition((String)o);
     }
 }
