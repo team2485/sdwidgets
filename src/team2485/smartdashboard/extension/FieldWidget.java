@@ -81,7 +81,7 @@ public class FieldWidget extends Widget {
         this.inRange   = Boolean.parseBoolean(split[3]);
 
         // distance from the target in feet
-        this.distance = (REAL_HALF_HEIGHT - this.positionY) / 12; // TODO: NOT ACCURATE, ONLY TO FIELD END
+        this.distance = (REAL_HALF_HEIGHT - this.positionY) / 12;
 
         repaint();
     }
@@ -144,19 +144,11 @@ public class FieldWidget extends Widget {
         g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         for (int i = 0; i < 8; i++) {
             g.setColor(new Color(255, 83, 13, 255 - i * 30));
-//            g.fillArc(x, y, i, i, ABORT, ABORT);
             // TODO: convert to Path2D.Double
             g.fillPolygon(
                     new int[] { (int)x - 5, (int)x, (int)x + 5 },
                     new int[] { (int)y - 25 - i * 12, (int)y - 30 - i * 12, (int)y - 25 - i * 12 }, 3);
         }
-
-//        g.drawLine(x, y - 20, x + 5, y - 15);
-//        g.drawLine(x, y - 20, x - 5, y - 15);
-//        g.drawLine(x, y - 30, x + 5, y - 25);
-//        g.drawLine(x, y - 30, x - 5, y - 25);
-//        g.drawLine(x, y - 40, x + 5, y - 35);
-//        g.drawLine(x, y - 40, x - 5, y - 35);
     }
 
     @Override
