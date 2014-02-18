@@ -474,14 +474,14 @@ public class AxisCameraProcessor2 extends StaticWidget {
 
             if (process) {
                 // Draw distance
-                g.setColor(new Color(0, 0, 0, 127));
-                g.fillRect(0, height - 36, width, 36);
-                g.setColor(Color.white);
-                g.setFont(new Font("Ubuntu", Font.BOLD, 22));
+                // g.setColor(new Color(0, 0, 0, 127));
+                // g.fillRect(0, height - 36, width, 36);
+                // g.setColor(Color.white);
+                // g.setFont(new Font("Ubuntu", Font.BOLD, 22));
 
-                final String intStr = Integer.toString((int)distance);
-                g.drawString(intStr, width / 2 - 3 - g.getFontMetrics().stringWidth(intStr), height - 10);
-                g.drawString(Integer.toString((int)((distance % 1) * 10)), width / 2 + 3, height - 10);
+                // final String intStr = Integer.toString((int)distance);
+                // g.drawString(intStr, width / 2 - 3 - g.getFontMetrics().stringWidth(intStr), height - 10);
+                // g.drawString(Integer.toString((int)((distance % 1) * 10)), width / 2 + 3, height - 10);
 
                 // Draw hot image
                 BufferedImage hotImg = null;
@@ -558,7 +558,7 @@ public class AxisCameraProcessor2 extends StaticWidget {
             binaryPreview.showImage(dilated.getBufferedImage());
 
         // Find the contours!
-        WPIBinaryImage binWpi = WPIExtensions.makeWPIBinaryImage(thresh);
+        WPIBinaryImage binWpi = WPIExtensions.makeWPIBinaryImage(dilated);
         contours = WPIExtensions.findConvexContours(binWpi);
 
         WPIContour lhContour = null, lvContour = null, rhContour = null, rvContour = null;
