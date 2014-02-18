@@ -16,13 +16,13 @@ public class ArmPot extends Widget {
     public static final DataType[] TYPES = {DataType.NUMBER};
 
     private static final double MIN_VAL = 2000, MAX_VAL = 3000;
-    public static int X = 244;
-    public static int Y = 244;
+    public static int X = 344;
+    public static int Y = 344;
     public int LX;
     public int LY;
     private double value = 2000;
     private int rawPotVal = 25990;
-    private int preVal[] = new int[6];
+    private int preVal[] = new int[5];
     private double dec = 0;
     private int spin;
     private Color color;
@@ -38,11 +38,11 @@ public class ArmPot extends Widget {
     @Override
     public void init() {
         try {
-            arm = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/ARMII.png"));
+            arm = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/ARMVI.png"));
         } catch (IOException e) {
         }
         try {
-            armS = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/ARMV.png"));
+            armS = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/ARMVIC.png"));
         } catch (IOException e) {
         }
         try {
@@ -69,24 +69,24 @@ public class ArmPot extends Widget {
 
         this.add(new airtanksPanel());
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    try {
-//                        Thread.sleep(10);
-//                    } catch (InterruptedException ex) {
-//                    }
-//                    rawPotVal = rawPotVal + 10;
-//                    //System.out.println(value);
-//                    setValue(arm);
-//                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
-//                    if (rawPotVal > 32001) {
-//                        rawPotVal = 20001;
-//                    }
-//                }
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                    }
+                    rawPotVal = rawPotVal + 10;
+                    //System.out.println(value);
+                    setValue(arm);
+                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
+                    if (rawPotVal > 32001) {
+                        rawPotVal = 20001;
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ArmPot extends Widget {
 
     @Override
     public void setValue(Object o) {
-        rawPotVal = ((Number) o).intValue();
+       // rawPotVal = ((Number) o).intValue();
         if (value == 0) {
             value = ((Number) o).intValue();
             value = (int) value / 10;
@@ -109,24 +109,26 @@ public class ArmPot extends Widget {
             if (((rawPotVal % 10) == 1) || ((rawPotVal % 10) == 0)) {
                 //System.out.println(value);
                 spin = (int) (rawPotVal % 10);
-                value = (((preVal[0] + preVal[1] + preVal[2] + preVal[3] + preVal[4] + preVal[5]) / 6 * .5) + ((rawPotVal / 10) * .5));
+                value = ((preVal[0] + preVal[1] + preVal[2] + preVal[3] + preVal[4]) / 5);
                 //System.out.println(value);
             }
         }
+
+
 
         dec = (value - 2427) / 4;
 
         if ((value > 2800) && (value < 2870)) {
             color = Color.orange;
-        } else {
-            color = Color.GRAY;
-        }
-        if (((rawPotVal / 10) > 2830) && ((rawPotVal / 10) < 2840)) {
+        } else if((value > 2975) && (value < 3025)){
+            color = Color.orange;
+        } else if(((rawPotVal / 10) > 2830) && ((rawPotVal / 10) < 2840)) {
             value = 2835;
             color = Color.green;
-        }
-        if (((rawPotVal / 10) > 2990) && ((rawPotVal / 10) < 3010)) {
+        }else if (((rawPotVal / 10) > 2985) && ((rawPotVal / 10) < 3015)) {
             value = 3000;
+            color = Color.green;
+        }  else {
             color = Color.yellow;
         }
 
@@ -146,13 +148,13 @@ public class ArmPot extends Widget {
             g.translate(X / 2, (Y / 2));
             if (spin == 0) {
                 g.rotate((dec - 90) * Math.PI / 180);
-                g.drawImage(arm, -5, -6, this);
+                g.drawImage(arm, -10, -10, this);
                 g.rotate(-(dec - 90) * Math.PI / 180);
                 g.drawImage(circle, -15, -15, this);
             }
             if (spin == 1) {
                 g.rotate((dec - 90) * Math.PI / 180);
-                g.drawImage(armS, -5, -6, this);
+                g.drawImage(armS, -10, -10, this);
                 g.rotate(-(dec - 90) * Math.PI / 180);
                 g.drawImage(circleS, -15, -15, this);
             }
@@ -167,7 +169,7 @@ public class ArmPot extends Widget {
             LX = LX - (g.getFontMetrics().stringWidth(string) / 2);
             LY = LY + (g.getFontMetrics().getHeight() / 2);
             //g.drawOval(LX, LY, 5, 5);
-            if (dec < 0) {
+            if (dec <= -1) {
                 g.drawString("-", (LX - g.getFontMetrics().charWidth('-')), LY);
             }
             g.setColor(color);
