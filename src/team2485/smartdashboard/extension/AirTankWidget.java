@@ -37,7 +37,7 @@ public class AirTankWidget extends Widget {
         }
 
         final Dimension size = new Dimension(150, 75);
-        this.setSize(size);
+        //this.setSize(size);
         this.setPreferredSize(size);
         this.setMinimumSize(new Dimension(10,7));
         this.setMaximumSize(new Dimension(1500,750));
@@ -54,7 +54,7 @@ public class AirTankWidget extends Widget {
 //                try {
 //                    Thread.sleep(100);
 //                } catch (InterruptedException ex) {
-//                    Logger.getLogger(AirTankWidget.class.getName()).log(Level.SEVERE, null, ex);
+//                    //Logger.getLogger(AirTankWidget.class.getName()).log(Level.SEVERE, null, ex);
 //                }
 //                value ++;
 //                //System.out.println(value);
@@ -73,7 +73,7 @@ public class AirTankWidget extends Widget {
     @Override
     public void setValue(Object o) {
         value = ((Number) o).doubleValue();
-        text = value + "";
+        text = (int)value + "";
 
 
         repaint();
@@ -84,7 +84,7 @@ public class AirTankWidget extends Widget {
         public airtankPanel() {
         }
 
-public Color RotateColorCW(Color color){
+    public Color RotateColorCW(Color color){
         int R;
         int G;
         int B;
@@ -114,7 +114,12 @@ public Color RotateColorCW(Color color){
     }
         @Override
         protected void paintComponent(final Graphics gg) {
+            if (getWidth() > getHeight()*2)
             X = getHeight()*2;
+            if (getWidth() < getHeight()*2)
+            X = getWidth();
+            this.setSize(X, getHeight());
+            
             MAX_DRAW_WIDTH = (int)(X*.92);
             drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
             if (value <= 60) {
@@ -140,12 +145,15 @@ public Color RotateColorCW(Color color){
                 }
                 g.setColor(color);
                 g.fillRoundRect(X/23, X/15, drawWidth, (int)(X/2.7), 8, 8);
-                color = RotateColorCCW(color);
+                color = RotateColorCW(color);
                 color = InvertColor(color);
                 //System.out.println(color);
                 g.setColor(color);
                 g.setFont(new Font("Ubuntu",Font.BOLD,(X/8)));
-                g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(getHeight()/1.75) + g.getFontMetrics().getHeight()/2);
+                g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
+                g.setFont(new Font("Consolas",0,(X/16)));
+                g.drawString("PSI", (int)(X/2.2+g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
+                g.drawString("." + (int)value%1 , (int)((X/2.2) + g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight());
 
             }
             g.drawImage(airtank, 0, 0, (X), (X/2), this);
