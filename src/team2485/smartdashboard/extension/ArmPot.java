@@ -16,7 +16,7 @@ public class ArmPot extends Widget {
 
     private static final double MIN_VAL = 2000, MAX_VAL = 3000;
     public static int X = 344;
-    public static int Y = 344;
+    //public static int Y = 344;
     public int LX;
     public int LY;
     private double value = 2000;
@@ -55,7 +55,7 @@ public class ArmPot extends Widget {
         } catch (IOException e) {
         }
 
-        final Dimension size = new Dimension(X, Y);
+        final Dimension size = new Dimension(X, X);
         this.setSize(size);
         this.setPreferredSize(size);
         this.setMinimumSize(new Dimension(100, 100));
@@ -96,7 +96,7 @@ public class ArmPot extends Widget {
 
     @Override
     public void setValue(Object o) {
-         rawPotVal = ((Number) o).intValue();
+        rawPotVal = ((Number) o).intValue();
         if (value == 0) {
             value = ((Number) o).intValue();
             value = (int) value / 10;
@@ -141,30 +141,33 @@ public class ArmPot extends Widget {
 
         @Override
         protected void paintComponent(final Graphics gg) {
-
+            if (getHeight() > getWidth())
             X = getWidth();
-            Y = getHeight();
+        if (getHeight() < getWidth())
+            X = getHeight();
+            
+            //Y = X;
             armX = X / 2;
             armY = X / 5;
             string = (int) Math.abs(dec) + "";// + "°";
             final Graphics2D g = (Graphics2D) gg;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.translate(X / 2, (Y / 2));
+            g.translate(X / 2, (X / 2));
             if (spin == 0) {
                 g.rotate((dec - 90) * Math.PI / 180);
                 g.drawImage(arm, -(armY / 8 ), -(armY / 7), armX, armY, this);
                 g.rotate(-(dec - 90) * Math.PI / 180);
-                g.drawImage(circle, -(armY / 6), -(armY / 6), (armY / 3), (armY / 3), this);
+                g.drawImage(circle, -(int)(armY / 3.5), -(int)(armY / 3.5), (int)(armY / 1.75), (int)(armY / 1.75), this); 
             }
             if (spin == 1) {
                 g.rotate((dec - 90) * Math.PI / 180);
                 g.drawImage(armS, -(armY / 8), -(armY / 7), armX, armY, this);
                 g.rotate(-(dec - 90) * Math.PI / 180);
-                g.drawImage(circleS, -(armY / 4), -(armY / 4), (armY / 2), (armY / 2), this);
+                g.drawImage(circleS, -(int)(armY / 3.5), -(int)(armY / 3.5), (int)(armY / 1.75), (int)(armY / 1.75), this);
             }
             hyp = ((g.getFontMetrics().stringWidth(string) / 2) + 30);
-            LX = (int) (Math.cos((dec - 90) * Math.PI / 180) * -armY/1.5) + 2;
-            LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -armY/1.7) - 7;
+            LX = (int) (Math.cos((dec - 90) * Math.PI / 180) * -armY/1.4) + 4;
+            LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -armY/1.6) - 14;
             g.setFont(new java.awt.Font("Ubuntu", 0, (int)(armY/4.667)));
             g.setColor(Color.GREEN);
             g.drawString("°", (LX + g.getFontMetrics().stringWidth(string)), LY + 5);
@@ -181,7 +184,7 @@ public class ArmPot extends Widget {
             g.setFont(new java.awt.Font("Consolas", 0, (armY/10)));
             g.setColor(Color.GREEN);
             g.drawString("" + rawPotVal, LX + (g.getFontMetrics().charWidth(2)), LY + (armY/10));
-            g.translate(-X / 2, (-Y / 2));
+            g.translate(-X / 2, (-X / 2));
 
         }
     }

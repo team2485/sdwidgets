@@ -11,6 +11,7 @@ public class Bot extends StaticWidget {
     public static final String NAME = "MiniBot";
 
     private BufferedImage image;
+    public int X;
 
 
     @Override
@@ -32,6 +33,10 @@ public class Bot extends StaticWidget {
 
     @Override
     protected void paintComponent(Graphics g) {
-        g.drawImage(image, 0, 0, getWidth(), getWidth(), null);
+        if (getHeight() > getWidth())
+            X = getWidth();
+        if (getHeight() < getWidth())
+            X = getHeight();
+        g.drawImage(image, 0, 0, X, X, null);
     }
 }
