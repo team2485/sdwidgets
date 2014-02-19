@@ -6,8 +6,6 @@ import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -48,24 +46,24 @@ public class AirTankWidget extends Widget {
         this.setLayout(layout);
 
         this.add(new airtankPanel(), BorderLayout.CENTER);
-        new Thread(new Runnable() {
-
-            @Override
-            public void run(){
-            while(true){
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(AirTankWidget.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                value ++;
-                //System.out.println(value);
-                setValue(label);
-                if (value > 120)
-                    value = 0;
-            }
-        }
-        }).start();
+//        new Thread(new Runnable() {
+//
+//            @Override
+//            public void run(){
+//            while(true){
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(AirTankWidget.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                value ++;
+//                //System.out.println(value);
+//                setValue(label);
+//                if (value > 120)
+//                    value = 0;
+//            }
+//        }
+//        }).start();
     }
 
     @Override
@@ -74,7 +72,7 @@ public class AirTankWidget extends Widget {
 
     @Override
     public void setValue(Object o) {
-       // value = ((Number) o).doubleValue();
+        value = ((Number) o).doubleValue();
         text = value + "";
 
 

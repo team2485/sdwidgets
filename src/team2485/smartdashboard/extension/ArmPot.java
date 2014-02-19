@@ -70,24 +70,24 @@ public class ArmPot extends Widget {
 
         this.add(new airtanksPanel());
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException ex) {
-                    }
-                    rawPotVal = rawPotVal + 10;
-                    //System.out.println(value);
-                    setValue(arm);
-                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
-                    if (rawPotVal > 30001) {
-                        rawPotVal = 20001;
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    try {
+//                        Thread.sleep(10);
+//                    } catch (InterruptedException ex) {
+//                    }
+//                    rawPotVal = rawPotVal + 10;
+//                    //System.out.println(value);
+//                    setValue(arm);
+//                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
+//                    if (rawPotVal > 30001) {
+//                        rawPotVal = 20001;
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ArmPot extends Widget {
 
     @Override
     public void setValue(Object o) {
-        // rawPotVal = ((Number) o).intValue();
+         rawPotVal = ((Number) o).intValue();
         if (value == 0) {
             value = ((Number) o).intValue();
             value = (int) value / 10;
