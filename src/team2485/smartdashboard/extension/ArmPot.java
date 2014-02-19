@@ -6,7 +6,6 @@ import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -23,6 +22,8 @@ public class ArmPot extends Widget {
     private double value = 2000;
     private int rawPotVal = 25990;
     private int preVal[] = new int[5];
+    public int armX;
+    public int armY;
     private double dec = 0;
     private int spin;
     private Color color;
@@ -57,8 +58,8 @@ public class ArmPot extends Widget {
         final Dimension size = new Dimension(X, Y);
         this.setSize(size);
         this.setPreferredSize(size);
-        this.setMinimumSize(size);
-        this.setMaximumSize(size);
+        this.setMinimumSize(new Dimension(100, 100));
+        this.setMaximumSize((new Dimension(1000, 1000)));
 
         final BorderLayout layout = new BorderLayout(0, 0);
         this.setLayout(layout);
@@ -81,7 +82,7 @@ public class ArmPot extends Widget {
                     //System.out.println(value);
                     setValue(arm);
                     //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
-                    if (rawPotVal > 32001) {
+                    if (rawPotVal > 30001) {
                         rawPotVal = 20001;
                     }
                 }
@@ -95,7 +96,7 @@ public class ArmPot extends Widget {
 
     @Override
     public void setValue(Object o) {
-       // rawPotVal = ((Number) o).intValue();
+        // rawPotVal = ((Number) o).intValue();
         if (value == 0) {
             value = ((Number) o).intValue();
             value = (int) value / 10;
@@ -114,21 +115,19 @@ public class ArmPot extends Widget {
             }
         }
 
-
-
         dec = (value - 2427) / 4;
 
-        if ((value > 2800) && (value < 2870)) {
-            color = Color.orange;
-        } else if((value > 2975) && (value < 3025)){
-            color = Color.orange;
-        } else if(((rawPotVal / 10) > 2830) && ((rawPotVal / 10) < 2840)) {
+        if (((rawPotVal / 10) > 2826) && ((rawPotVal / 10) < 2844)) {
             value = 2835;
             color = Color.green;
-        }else if (((rawPotVal / 10) > 2985) && ((rawPotVal / 10) < 3015)) {
+        } else if (((rawPotVal / 10) > 2985) && ((rawPotVal / 10) < 3015)) {
             value = 3000;
             color = Color.green;
-        }  else {
+        } else if ((value > 2800) && (value < 2870)) {
+            color = Color.cyan;
+        } else if ((value > 2975) && (value < 3025)) {
+            color = Color.orange;
+        } else {
             color = Color.yellow;
         }
 
@@ -142,29 +141,35 @@ public class ArmPot extends Widget {
 
         @Override
         protected void paintComponent(final Graphics gg) {
+
+            X = getWidth();
+            Y = getHeight();
+            armX = X / 2;
+            armY = X / 5;
             string = (int) Math.abs(dec) + "";// + "°";
             final Graphics2D g = (Graphics2D) gg;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.translate(X / 2, (Y / 2));
             if (spin == 0) {
                 g.rotate((dec - 90) * Math.PI / 180);
-                g.drawImage(arm, -10, -10, this);
+                g.drawImage(arm, -(armY / 8 ), -(armY / 7), armX, armY, this);
                 g.rotate(-(dec - 90) * Math.PI / 180);
-                g.drawImage(circle, -15, -15, this);
+                g.drawImage(circle, -(armY / 6), -(armY / 6), (armY / 3), (armY / 3), this);
             }
             if (spin == 1) {
                 g.rotate((dec - 90) * Math.PI / 180);
-                g.drawImage(armS, -10, -10, this);
+                g.drawImage(armS, -(armY / 8), -(armY / 7), armX, armY, this);
                 g.rotate(-(dec - 90) * Math.PI / 180);
-                g.drawImage(circleS, -15, -15, this);
+                g.drawImage(circleS, -(armY / 4), -(armY / 4), (armY / 2), (armY / 2), this);
             }
             hyp = ((g.getFontMetrics().stringWidth(string) / 2) + 30);
-            LX = (int) (Math.cos((dec - 90) * Math.PI / 180) * -45) + 2;
-            LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -37) - 7;
-            g.setFont(new java.awt.Font("Ubuntu", 0, 15));
+            LX = (int) (Math.cos((dec - 90) * Math.PI / 180) * -armY/1.5) + 2;
+            LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -armY/1.7) - 7;
+            g.setFont(new java.awt.Font("Ubuntu", 0, (int)(armY/4.667)));
             g.setColor(Color.GREEN);
             g.drawString("°", (LX + g.getFontMetrics().stringWidth(string)), LY + 5);
-            g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, 30));
+            g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, (int)(armY/2.333)));
+            g.setColor(color);
             //g.fillOval(LX, LY, 5, 5);
             LX = LX - (g.getFontMetrics().stringWidth(string) / 2);
             LY = LY + (g.getFontMetrics().getHeight() / 2);
@@ -172,11 +177,10 @@ public class ArmPot extends Widget {
             if (dec <= -1) {
                 g.drawString("-", (LX - g.getFontMetrics().charWidth('-')), LY);
             }
-            g.setColor(color);
             g.drawString(string, LX, (LY));
-            g.setFont(new java.awt.Font("Consolas", 0, 8));
+            g.setFont(new java.awt.Font("Consolas", 0, (armY/10)));
             g.setColor(Color.GREEN);
-            g.drawString("" + rawPotVal, LX + (g.getFontMetrics().charWidth(2)), LY + 7);
+            g.drawString("" + rawPotVal, LX + (g.getFontMetrics().charWidth(2)), LY + (armY/10));
             g.translate(-X / 2, (-Y / 2));
 
         }
