@@ -24,7 +24,8 @@ public class ArmPot extends Widget {
     private int preVal[] = new int[5];
     public int armX;
     public int armY;
-    private double dec = 0;
+    private double deca = 0;
+    private double decb = 0;
     private int spin;
     private Color color;
     private String string;
@@ -70,24 +71,24 @@ public class ArmPot extends Widget {
 
         this.add(new airtanksPanel());
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    try {
-//                        Thread.sleep(10);
-//                    } catch (InterruptedException ex) {
-//                    }
-//                    rawPotVal = rawPotVal + 10;
-//                    //System.out.println(value);
-//                    setValue(arm);
-//                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
-//                    if (rawPotVal > 30001) {
-//                        rawPotVal = 20001;
-//                    }
-//                }
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ex) {
+                    }
+                    rawPotVal = rawPotVal + 10;
+                    //System.out.println(value);
+                    setValue(arm);
+                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
+                    if (rawPotVal > 30001) {
+                        rawPotVal = 20001;
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -96,7 +97,7 @@ public class ArmPot extends Widget {
 
     @Override
     public void setValue(Object o) {
-        rawPotVal = ((Number) o).intValue();
+        //rawPotVal = ((Number) o).intValue();
         if (value == 0) {
             value = ((Number) o).intValue();
             value = (int) value / 10;
@@ -115,22 +116,21 @@ public class ArmPot extends Widget {
             }
         }
 
-        dec = (value - 2427) / 4;
-
-        if (((rawPotVal / 10) > 2826) && ((rawPotVal / 10) < 2844)) {
+        deca = (value - 2427) / 4;
+        if (((value) > 2826) && ((value) < 2844)) {
             value = 2835;
-            color = Color.green;
-        } else if (((rawPotVal / 10) > 2985) && ((rawPotVal / 10) < 3015)) {
-            value = 3000;
-            color = Color.green;
-        } else if ((value > 2800) && (value < 2870)) {
             color = Color.cyan;
+        } else if ((value > 2985) && (value < 3015)) {
+            value = 3000;
+            color = Color.cyan;
+        } else if ((value > 2800) && (value < 2870)) {
+            color = Color.green;
         } else if ((value > 2975) && (value < 3025)) {
             color = Color.orange;
         } else {
             color = Color.yellow;
         }
-
+        decb = (value - 2427) / 4;
         repaint();
     }
 
@@ -141,49 +141,51 @@ public class ArmPot extends Widget {
 
         @Override
         protected void paintComponent(final Graphics gg) {
-            if (getHeight() > getWidth())
-            X = getWidth();
-        if (getHeight() < getWidth())
-            X = getHeight();
-            
+            if (getHeight() > getWidth()) {
+                X = getWidth();
+            }
+            if (getHeight() < getWidth()) {
+                X = getHeight();
+            }
+
             //Y = X;
             armX = X / 2;
             armY = X / 5;
-            string = (int) Math.abs(dec) + "";// + "°";
+            string = (int) Math.abs(decb) + "";// + "°";
             final Graphics2D g = (Graphics2D) gg;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.translate(X / 2, (X / 2));
             if (spin == 0) {
-                g.rotate((dec - 90) * Math.PI / 180);
-                g.drawImage(arm, -(armY / 8 ), -(armY / 7), armX, armY, this);
-                g.rotate(-(dec - 90) * Math.PI / 180);
-                g.drawImage(circle, -(int)(armY / 3.5), -(int)(armY / 3.5), (int)(armY / 1.75), (int)(armY / 1.75), this); 
+                g.rotate((deca - 90) * Math.PI / 180);
+                g.drawImage(arm, -(armY / 8), -(armY / 7), armX, armY, this);
+                g.rotate(-(deca - 90) * Math.PI / 180);
+                g.drawImage(circle, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
             }
             if (spin == 1) {
-                g.rotate((dec - 90) * Math.PI / 180);
+                g.rotate((deca - 90) * Math.PI / 180);
                 g.drawImage(armS, -(armY / 8), -(armY / 7), armX, armY, this);
-                g.rotate(-(dec - 90) * Math.PI / 180);
-                g.drawImage(circleS, -(int)(armY / 3.5), -(int)(armY / 3.5), (int)(armY / 1.75), (int)(armY / 1.75), this);
+                g.rotate(-(deca - 90) * Math.PI / 180);
+                g.drawImage(circleS, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
             }
             hyp = ((g.getFontMetrics().stringWidth(string) / 2) + 30);
-            LX = (int) (Math.cos((dec - 90) * Math.PI / 180) * -armY/1.4) + 4;
-            LY = (int) (Math.sin((dec - 90) * Math.PI / 180) * -armY/1.6) - 14;
-            g.setFont(new java.awt.Font("Ubuntu", 0, (int)(armY/4.667)));
+            LX = (int) (Math.cos((deca - 90) * Math.PI / 180) * -armY / 1.4) + 4;
+            LY = (int) (Math.sin((deca - 90) * Math.PI / 180) * -armY / 1.6) - 14;
+            g.setFont(new java.awt.Font("Ubuntu", 0, (int) (armY / 4.667)));
             g.setColor(Color.GREEN);
             g.drawString("°", (LX + g.getFontMetrics().stringWidth(string)), LY + 5);
-            g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, (int)(armY/2.333)));
+            g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, (int) (armY / 2.333)));
             g.setColor(color);
             //g.fillOval(LX, LY, 5, 5);
             LX = LX - (g.getFontMetrics().stringWidth(string) / 2);
             LY = LY + (g.getFontMetrics().getHeight() / 2);
             //g.drawOval(LX, LY, 5, 5);
-            if (dec <= -1) {
+            if (deca <= -1) {
                 g.drawString("-", (LX - g.getFontMetrics().charWidth('-')), LY);
             }
             g.drawString(string, LX, (LY));
-            g.setFont(new java.awt.Font("Consolas", 0, (armY/10)));
+            g.setFont(new java.awt.Font("Consolas", 0, (armY / 10)));
             g.setColor(Color.GREEN);
-            g.drawString("" + rawPotVal, LX + (g.getFontMetrics().charWidth(2)), LY + (armY/10));
+            g.drawString("" + rawPotVal, LX + (g.getFontMetrics().charWidth(2)), LY + (armY / 10));
             g.translate(-X / 2, (-X / 2));
 
         }
