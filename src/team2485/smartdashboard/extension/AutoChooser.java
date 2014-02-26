@@ -1,9 +1,14 @@
 package team2485.smartdashboard.extension;
 
-import edu.wpi.first.smartdashboard.gui.Widget;
+import edu.wpi.first.smartdashboard.gui.StaticWidget;
 import edu.wpi.first.smartdashboard.properties.Property;
+import edu.wpi.first.smartdashboard.robot.Robot;
 import edu.wpi.first.smartdashboard.types.DataType;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.IRemote;
+import edu.wpi.first.wpilibj.tables.IRemoteConnectionListener;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -15,11 +20,15 @@ import javax.swing.JPopupMenu;
  * Autonomous mode chooser
  * @author Bryce Matsumori
  */
-public class AutoChooser extends Widget {
+public class AutoChooser extends StaticWidget implements IRemoteConnectionListener {
     public static final String NAME = "Autonomous Chooser";
     public static final DataType[] TYPES = { DataType.NUMBER };
+    private static final String FIELD_NAME = "autoMode";
 
-    private static final String[] MODES = new String[] { "None", "One Ball", "Two Ball", "Three Ball" };
+    private static final String[] MODES = new String[] {
+        // reflects robot code as of commit 6c561580 "</build>. Three cheers for Odin!"
+        "Forward", "Forward Truss", "Forward Custom", "One Ball Left", "One Ball Right", "One Ball Truss Left", "One Ball Truss Right", "One Ball From Left To Center Truss", "One Ball From Right To Center Truss", "One Ball Angled Shot Left", "One Ball Angled Shot Right", "One Ball Custom Left", "Two Ball", "Three Ball"
+    };
     private int selectedIndex = 0;
 
     private final JPopupMenu popup;
@@ -49,6 +58,14 @@ public class AutoChooser extends Widget {
     @Override
     public void init() {
         table = NetworkTable.getTable("SmartDashboard");
+        table.addTableListener(FIELD_NAME, new ITableListener() {
+            @Override
+            public void valueChanged(ITable source, String key, Object value, boolean isNew) {
+                setIndex(((Number)value).intValue());
+            }
+        }, true);
+
+        Robot.addConnectionListener(this, true);
     }
 
     private void setIndex(int index) {
@@ -57,12 +74,19 @@ public class AutoChooser extends Widget {
     }
 
     @Override
-    public void setValue(Object value) {
-        setIndex(((Number)value).intValue());
+    public void propertyChanged(Property property) {
     }
 
     @Override
-    public void propertyChanged(Property property) {
+    public void connected(IRemote remote) {
+        if (table.getNumber(FIELD_NAME, -1) == -1) {
+            // update the robot with this value when we first connect if it doesn't have anything
+            sendButtonMousePressed(null);
+        }
+    }
+
+    @Override
+    public void disconnected(IRemote remote) {
     }
 
     /**
@@ -152,7 +176,7 @@ public class AutoChooser extends Widget {
     }// </editor-fold>//GEN-END:initComponents
 
     private void sendButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sendButtonMousePressed
-        table.putNumber(getFieldName(), selectedIndex);
+        table.putNumber(FIELD_NAME, selectedIndex);
         if (!buttonPressed) {
             if (buttonIcon == null) buttonIcon = sendButton.getIcon();
             sendButton.setIcon(buttonPressedIcon);
