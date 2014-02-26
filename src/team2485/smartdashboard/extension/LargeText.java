@@ -1,11 +1,9 @@
 package team2485.smartdashboard.extension;
 
-import edu.wpi.first.smartdashboard.gui.StaticWidget;
 import edu.wpi.first.smartdashboard.gui.Widget;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.Color;
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -17,19 +15,17 @@ public class LargeText extends Widget {
     public void init() {
         initComponents();
         this.titleLabel.setText(this.getFieldName());
-        
+
         final JPanel self = this;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 // force net border
-                self.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Color.white, 1, true),
-                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+                self.setBorder(new team2485.smartdashboard.extension.util.NiceBorder(Color.white, 1, 6, 5));
             }
         });
     }
-    
+
     @Override
     public void setValue(Object o) {
         if (o instanceof Number)
@@ -55,7 +51,7 @@ public class LargeText extends Widget {
         valueLabel = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(17, 17, 17));
-        setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 1, true), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        setBorder(new team2485.smartdashboard.extension.util.NiceBorder(Color.white, 1, 6, 5));
         setMaximumSize(new java.awt.Dimension(32767, 61));
         setMinimumSize(new java.awt.Dimension(100, 61));
         setOpaque(false);
@@ -74,7 +70,7 @@ public class LargeText extends Widget {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(valueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+            .addComponent(valueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

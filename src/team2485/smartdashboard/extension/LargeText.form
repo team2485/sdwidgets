@@ -5,19 +5,8 @@
     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
       <Color blue="11" green="11" red="11" type="rgb"/>
     </Property>
-    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-      <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
-        <CompoundBorder>
-          <Border PropertyName="outside" info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-            <LineBorder roundedCorners="true">
-              <Color PropertyName="color" blue="ff" green="ff" red="ff" type="rgb"/>
-            </LineBorder>
-          </Border>
-          <Border PropertyName="inside" info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
-            <EmptyBorder bottom="5" left="5" right="5" top="5"/>
-          </Border>
-        </CompoundBorder>
-      </Border>
+    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+      <Connection code="new team2485.smartdashboard.extension.util.NiceBorder(Color.white, 1, 6, 5)" type="code"/>
     </Property>
     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[32767, 61]"/>
@@ -46,7 +35,7 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="titleLabel" max="32767" attributes="0"/>
-          <Component id="valueLabel" pref="288" max="32767" attributes="0"/>
+          <Component id="valueLabel" pref="300" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
