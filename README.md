@@ -18,6 +18,7 @@ Widgets
 | Debug region indicator (hidden behind DS)             | `DebugRegion`                       |
 | Field position/distance                               | `FieldWidget`                       |
 | Large text                                            | `LargeText`                         |
+| Light mode switcher                                   | `LightSwitcher`                     |
 | Robot data logger (saves logs to file)                | `Logger`                            |
 | Logo connection indicator and background setter       | `Logo`                              |
 | Nyan cats (static and data-driven)                    | `NyanCat`, `StaticNyanCat`          |
