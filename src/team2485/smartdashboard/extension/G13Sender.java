@@ -111,7 +111,7 @@ public class G13Sender extends StaticWidget {
                                 activityFuture = activityExec.schedule(hideActivity, 500, TimeUnit.MILLISECONDS);
                             }
                             catch (NullPointerException ex) {
-                                System.err.println("Could not map key '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
+                                System.err.println("Could not map key press '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
                             }
                         }
                     }
@@ -120,6 +120,23 @@ public class G13Sender extends StaticWidget {
 
             @Override
             public void nativeKeyReleased(NativeKeyEvent nke) {
+                if (nke.getModifiers() == 11) { // ctrl + shift + alt
+                    switch (nke.getKeyCode()) {
+                        case NativeKeyEvent.VK_CONTROL:
+                        case NativeKeyEvent.VK_SHIFT:
+                        case NativeKeyEvent.VK_ALT:
+                            break;
+                        default: {
+                            try {
+                                final int key = keystrokeMap.get((char)nke.getKeyCode());
+                                table.putBoolean(Integer.toString(key), false);
+                            }
+                            catch (NullPointerException ex) {
+                                System.err.println("Could not map key release '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
+                            }
+                        }
+                    }
+                }
             }
 
             @Override

@@ -21,6 +21,7 @@ Widgets
 | Better booleans                                       | `CoolBool`                          |
 | Debug region indicator (hidden behind DS)             | `DebugRegion`                       |
 | Field position/distance                               | `FieldWidget`                       |
+| Logitech G13 G-key input sender                       | `G13Sender`                         |
 | Large text                                            | `LargeText`                         |
 | Light mode switcher                                   | `LightSwitcher`                     |
 | Robot data logger (saves logs to file)                | `Logger`                            |
