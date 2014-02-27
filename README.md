@@ -10,10 +10,14 @@ Widgets
 
 | Widget                                                | Class                               |
 | ----------------------------------------------------- | ----------------------------------  |
+| Air tank widget                                       | `AirTankWidget`                     |
+| Small air tank widget                                 | `AirTankWidgetS`                    |
+| Odin intake arm position widget                       | `ArmPot`                            |
 | Autonomous mode chooser                               | `AutoChooser`                       |
 | Axis camera image processor                           | `AxisCameraProcessor2`              |
 | Background left/right sides (fancy background images) | `BackgroundLeft`, `BackgroundRight` |
 | Battery voltage indicator                             | `BatteryWidget`                     |
+| Odin frame image                                      | `Bot`                               |
 | Better booleans                                       | `CoolBool`                          |
 | Debug region indicator (hidden behind DS)             | `DebugRegion`                       |
 | Field position/distance                               | `FieldWidget`                       |

@@ -21,7 +21,7 @@ public class ArmPot extends Widget {
     public int LY;
     private double value = 2000;
     private int rawPotVal = 25990;
-    private int preVal[] = new int[5];
+    private final int preVal[] = new int[5];
     public int armX;
     public int armY;
     private double deca = 0;
@@ -32,35 +32,22 @@ public class ArmPot extends Widget {
     private int hyp;
     private int i = 0;
 
-    private BufferedImage armS;
-    private BufferedImage arm;
-    private BufferedImage circle;
-    private BufferedImage circleS;
+    private BufferedImage arm, armS, circle, circleS;
 
     @Override
     public void init() {
         try {
-            arm = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/ARMVI.png"));
-        } catch (IOException e) {
-        }
-        try {
-            armS = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/ARMVIC.png"));
-        } catch (IOException e) {
-        }
-        try {
-            circle = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/Circle.png"));
-        } catch (IOException e) {
-        }
-        try {
-            circleS = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/CircleS.png"));
-        } catch (IOException e) {
-        }
+            arm = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm.png"));
+            armS = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c.png"));
+            circle = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot.png"));
+            circleS = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot-s.png"));
+        } catch (IOException e) { }
 
         final Dimension size = new Dimension(X, X);
         this.setSize(size);
         this.setPreferredSize(size);
         this.setMinimumSize(new Dimension(100, 100));
-        this.setMaximumSize((new Dimension(1000, 1000)));
+        this.setMaximumSize((new Dimension(800, 800)));
 
         final BorderLayout layout = new BorderLayout(0, 0);
         this.setLayout(layout);
@@ -69,26 +56,23 @@ public class ArmPot extends Widget {
             preVal[r] = 2000;
         }
 
-        this.add(new airtanksPanel());
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(30);
-                    } catch (InterruptedException ex) {
-                    }
-                    rawPotVal = rawPotVal + 10;
-                    //System.out.println(value);
-                    setValue(arm);
-                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
-                    if (rawPotVal > 30001) {
-                        rawPotVal = 20001;
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    try {
+//                        Thread.sleep(30);
+//                    } catch (InterruptedException ex) { }
+//                    rawPotVal = rawPotVal + 10;
+//                    //System.out.println(value);
+//                    setValue(arm);
+//                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
+//                    if (rawPotVal > 30001) {
+//                        rawPotVal = 20001;
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     @Override
@@ -134,60 +118,49 @@ public class ArmPot extends Widget {
         repaint();
     }
 
-    private class airtanksPanel extends JPanel {
+    @Override
+    protected void paintComponent(final Graphics gg) {
+        X = Math.min(getWidth(), getHeight());
 
-        public airtanksPanel() {
+        //Y = X;
+        armX = X / 2;
+        armY = X / 5;
+        string = (int) Math.abs(decb) + "";// + "°";
+        final Graphics2D g = (Graphics2D) gg;
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.translate(X / 2, (X / 2));
+        if (spin == 0) {
+            g.rotate((deca - 90) * Math.PI / 180);
+            g.drawImage(arm, -(armY / 8), -(armY / 7), armX, armY, this);
+            g.rotate(-(deca - 90) * Math.PI / 180);
+            g.drawImage(circle, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
         }
-
-        @Override
-        protected void paintComponent(final Graphics gg) {
-            if (getHeight() > getWidth()) {
-                X = getWidth();
-            }
-            if (getHeight() < getWidth()) {
-                X = getHeight();
-            }
-
-            //Y = X;
-            armX = X / 2;
-            armY = X / 5;
-            string = (int) Math.abs(decb) + "";// + "°";
-            final Graphics2D g = (Graphics2D) gg;
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.translate(X / 2, (X / 2));
-            if (spin == 0) {
-                g.rotate((deca - 90) * Math.PI / 180);
-                g.drawImage(arm, -(armY / 8), -(armY / 7), armX, armY, this);
-                g.rotate(-(deca - 90) * Math.PI / 180);
-                g.drawImage(circle, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
-            }
-            if (spin == 1) {
-                g.rotate((deca - 90) * Math.PI / 180);
-                g.drawImage(armS, -(armY / 8), -(armY / 7), armX, armY, this);
-                g.rotate(-(deca - 90) * Math.PI / 180);
-                g.drawImage(circleS, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
-            }
-            hyp = ((g.getFontMetrics().stringWidth(string) / 2) + 30);
-            LX = (int) (Math.cos((deca - 90) * Math.PI / 180) * -armY / 1.4) + 4;
-            LY = (int) (Math.sin((deca - 90) * Math.PI / 180) * -armY / 1.6) - 14;
-            g.setFont(new java.awt.Font("Ubuntu", 0, (int) (armY / 4.667)));
-            g.setColor(Color.GREEN);
-            g.drawString("°", (LX + g.getFontMetrics().stringWidth(string)), LY + 5);
-            g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, (int) (armY / 2.333)));
-            g.setColor(color);
-            //g.fillOval(LX, LY, 5, 5);
-            LX = LX - (g.getFontMetrics().stringWidth(string) / 2);
-            LY = LY + (g.getFontMetrics().getHeight() / 2);
-            //g.drawOval(LX, LY, 5, 5);
-            if (deca <= -1) {
-                g.drawString("-", (LX - g.getFontMetrics().charWidth('-')), LY);
-            }
-            g.drawString(string, LX, (LY));
-            g.setFont(new java.awt.Font("Consolas", 0, (armY / 10)));
-            g.setColor(Color.GREEN);
-            g.drawString("" + rawPotVal, LX + (g.getFontMetrics().charWidth(2)), LY + (armY / 10));
-            g.translate(-X / 2, (-X / 2));
-
+        if (spin == 1) {
+            g.rotate((deca - 90) * Math.PI / 180);
+            g.drawImage(armS, -(armY / 8), -(armY / 7), armX, armY, this);
+            g.rotate(-(deca - 90) * Math.PI / 180);
+            g.drawImage(circleS, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
         }
+        hyp = ((g.getFontMetrics().stringWidth(string) / 2) + 30);
+        LX = (int) (Math.cos((deca - 90) * Math.PI / 180) * -armY / 1.4) + 4;
+        LY = (int) (Math.sin((deca - 90) * Math.PI / 180) * -armY / 1.6) - 14;
+        g.setFont(new java.awt.Font("Ubuntu", 0, (int) (armY / 4.667)));
+        g.setColor(Color.GREEN);
+        g.drawString("°", (LX + g.getFontMetrics().stringWidth(string)), LY + 5);
+        g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, (int) (armY / 2.333)));
+        g.setColor(color);
+        //g.fillOval(LX, LY, 5, 5);
+        LX = LX - (g.getFontMetrics().stringWidth(string) / 2);
+        LY = LY + (g.getFontMetrics().getHeight() / 2);
+        //g.drawOval(LX, LY, 5, 5);
+        if (deca <= -1) {
+            g.drawString("-", (LX - g.getFontMetrics().charWidth('-')), LY);
+        }
+        g.drawString(string, LX, (LY));
+        g.setFont(new java.awt.Font("Consolas", 0, (armY / 10)));
+        g.setColor(Color.GREEN);
+        g.drawString("" + rawPotVal, LX + (g.getFontMetrics().charWidth(2)), LY + (armY / 10));
+        g.translate(-X / 2, (-X / 2));
+
     }
 }

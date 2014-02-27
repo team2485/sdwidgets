@@ -27,7 +27,7 @@ public class AirTankWidgetS extends Widget {
     @Override
     public void init() {
         try {
-            airtankS = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/TankSmall.png"));
+            airtankS = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/TankSmall.png"));
         } catch (IOException e) {
         }
 
@@ -40,7 +40,7 @@ public class AirTankWidgetS extends Widget {
         final BorderLayout layout = new BorderLayout(0, 0);
         this.setLayout(layout);
 
-        this.add(new airtankSPanel(), BorderLayout.CENTER);
+        this.add(new AirTankSPanel(), BorderLayout.CENTER);
 
 
         label = new JLabel("UNKNOWN");
@@ -65,9 +65,9 @@ public class AirTankWidgetS extends Widget {
         repaint();
     }
 
-    private class airtankSPanel extends JPanel {
+    private class AirTankSPanel extends JPanel {
 
-        public airtankSPanel() {
+        public AirTankSPanel() {
         }
 
         @Override

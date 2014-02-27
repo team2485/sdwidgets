@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.*;
 
 public class AirTankWidget extends Widget {
 
@@ -27,35 +26,26 @@ public class AirTankWidget extends Widget {
     private String text;
 
     private BufferedImage airtank;
-    private JLabel label;
 
     @Override
     public void init() {
         try {
-            airtank = ImageIO.read(BackgroundLeft.class.getResourceAsStream("/team2485/smartdashboard/extension/res/Tank2.png"));
-        } catch (IOException e) {
-        }
+            airtank = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/tank.png"));
+        } catch (IOException e) { }
 
         final Dimension size = new Dimension(150, 75);
-        //this.setSize(size);
+        this.setSize(size);
         this.setPreferredSize(size);
         this.setMinimumSize(new Dimension(10,7));
-        this.setMaximumSize(new Dimension(1500,750));
+        this.setMaximumSize(new Dimension(400,200));
 
-        final BorderLayout layout = new BorderLayout(0, 0);
-        this.setLayout(layout);
-
-        this.add(new airtankPanel(), BorderLayout.CENTER);
 //        new Thread(new Runnable() {
-//
 //            @Override
 //            public void run(){
 //            while(true){
 //                try {
 //                    Thread.sleep(100);
-//                } catch (InterruptedException ex) {
-//                    //Logger.getLogger(AirTankWidget.class.getName()).log(Level.SEVERE, null, ex);
-//                }
+//                } catch (InterruptedException ex) { }
 //                value ++;
 //                //System.out.println(value);
 //                setValue(label);
@@ -79,12 +69,7 @@ public class AirTankWidget extends Widget {
         repaint();
     }
 
-    private class airtankPanel extends JPanel {
-
-        public airtankPanel() {
-        }
-
-    public Color RotateColorCW(Color color){
+    private Color RotateColorCW(Color color){
         int R;
         int G;
         int B;
@@ -94,7 +79,7 @@ public class AirTankWidget extends Widget {
         color = (new java.awt.Color(R, G, B));
         return color;
     }
-    public Color RotateColorCCW(Color color){
+    private Color RotateColorCCW(Color color){
         int R;
         int G;
         int B;
@@ -104,60 +89,57 @@ public class AirTankWidget extends Widget {
         color = (new java.awt.Color(R, G, B));
         return color;
     }
-    public Color InvertColor(Color color){
+    private Color InvertColor(Color color){
         int R = (255-color.getRed());
         int G = (255-color.getGreen());
         int B = (255-color.getBlue());
-        
+
         color = (new java.awt.Color(R, G, B));
         return color;
     }
-        @Override
-        protected void paintComponent(final Graphics gg) {
-            if (getWidth() > getHeight()*2)
-            X = getHeight()*2;
-            if (getWidth() < getHeight()*2)
-            X = getWidth();
-            this.setSize(X, getHeight());
-            
-            MAX_DRAW_WIDTH = (int)(X*.92);
-            drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
-            if (value <= 60) {
-                R = 251;
-                G = 0;
-                B = 0;
-            } else if ((value > 60) && (value <= 90)) {
-                R = (255 - ((value - 60) * (.2)));
-                G = ((value - 60) * 4.367);
-                B = 0;
-            } else if ((value > 90) && (value <= 120)) {
-                R = (int) 255 - ((value - 90) * ((value - 90) / 3.66));
-                G = ((value - 90) * ((value - 90) / 14.05)) + 131;
-            }
-            color = (new java.awt.Color(((int) R), ((int) G), ((int) B)));
-            final Graphics2D g = (Graphics2D) gg;
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            if (drawWidth > 0) {
-                g.setColor(new java.awt.Color(100, 100, 100, 100));
-                g.fillRoundRect((X/23), (X/15), MAX_DRAW_WIDTH, (int)(X/2.7), 8, 8);
-                if (drawWidth > MAX_DRAW_WIDTH) {
-                    drawWidth = MAX_DRAW_WIDTH;
-                }
-                g.setColor(color);
-                g.fillRoundRect(X/23, X/15, drawWidth, (int)(X/2.7), 8, 8);
-                color = RotateColorCW(color);
-                color = InvertColor(color);
-                //System.out.println(color);
-                g.setColor(color);
-                g.setFont(new Font("Ubuntu",Font.BOLD,(X/8)));
-                g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
-                g.setFont(new Font("Consolas",0,(X/16)));
-                g.drawString("PSI", (int)(X/2.2+g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
-                g.drawString("." + (int)value%1 , (int)((X/2.2) + g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight());
 
+    @Override
+    protected void paintComponent(final Graphics gg) {
+        X = Math.min(getWidth(), getHeight() * 2);
+        this.setSize(X, getHeight());
+
+        MAX_DRAW_WIDTH = (int)(X*.92);
+        drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
+        if (value <= 60) {
+            R = 251;
+            G = 0;
+            B = 0;
+        } else if ((value > 60) && (value <= 90)) {
+            R = (255 - ((value - 60) * (.2)));
+            G = ((value - 60) * 4.367);
+            B = 0;
+        } else if ((value > 90) && (value <= 120)) {
+            R = (int) 255 - ((value - 90) * ((value - 90) / 3.66));
+            G = ((value - 90) * ((value - 90) / 14.05)) + 131;
+        }
+        color = (new java.awt.Color(((int) R), ((int) G), ((int) B)));
+        final Graphics2D g = (Graphics2D) gg;
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (drawWidth > 0) {
+            g.setColor(new java.awt.Color(100, 100, 100, 100));
+            g.fillRoundRect((X/23), (X/15), MAX_DRAW_WIDTH, (int)(X/2.7), 8, 8);
+            if (drawWidth > MAX_DRAW_WIDTH) {
+                drawWidth = MAX_DRAW_WIDTH;
             }
-            g.drawImage(airtank, 0, 0, (X), (X/2), this);
+            g.setColor(color);
+            g.fillRoundRect(X/23, X/15, drawWidth, (int)(X/2.7), 8, 8);
+            color = RotateColorCW(color);
+            color = InvertColor(color);
+            //System.out.println(color);
+            g.setColor(color);
+            g.setFont(new Font("Ubuntu",Font.BOLD,(X/8)));
+            g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
+            g.setFont(new Font("Consolas",0,(X/16)));
+            g.drawString("PSI", (int)(X/2.2+g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
+            g.drawString("." + (int)value%1 , (int)((X/2.2) + g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight());
 
         }
+        g.drawImage(airtank, 0, 0, (X), (X/2), this);
+
     }
 }
