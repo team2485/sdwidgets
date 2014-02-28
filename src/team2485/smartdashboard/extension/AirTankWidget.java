@@ -30,10 +30,10 @@ public class AirTankWidget extends Widget {
     @Override
     public void init() {
         try {
-            airtank = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/tank.png"));
+            airtank = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/Tank.png"));
         } catch (IOException e) { }
 
-        final Dimension size = new Dimension(150, 75);
+        final Dimension size = new Dimension(300, 140);
         this.setSize(size);
         this.setPreferredSize(size);
         this.setMinimumSize(new Dimension(10,7));
@@ -48,7 +48,7 @@ public class AirTankWidget extends Widget {
 //                } catch (InterruptedException ex) { }
 //                value ++;
 //                //System.out.println(value);
-//                setValue(label);
+//                setValue(text);
 //                if (value > 120)
 //                    value = 0;
 //            }
@@ -101,7 +101,7 @@ public class AirTankWidget extends Widget {
     @Override
     protected void paintComponent(final Graphics gg) {
         X = Math.min(getWidth(), getHeight() * 2);
-        this.setSize(X, getHeight());
+        //this.setSize(X, getHeight());
 
         MAX_DRAW_WIDTH = (int)(X*.92);
         drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
