@@ -21,21 +21,23 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 /**
- * Guitar Hero X-plorer strummer axis sender
+ * Logitech G13 G-key input sender
  * @author Bryce Matsumori
  */
 public class G13Sender extends StaticWidget {
     public static final String NAME = "G13 Sender";
 
+    private static final int NUM_KEYS = 24;
+    private static final long MIN_RELEASE_TIME = 30L;
+
     private NetworkTable table;
     private BufferedImage image, imageActivity;
 
-    private boolean[] keysPressed = new boolean[24];
-    private final Object keyLock = new Object();
+    private final long[] keyPressTime = new long[NUM_KEYS];
 
     private boolean activity;
     private final HashMap<Character, Integer> keystrokeMap;
-    private final ScheduledExecutorService activityExec = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
     private final Runnable hideActivity = new Runnable() {
         @Override
         public void run() {
@@ -55,10 +57,14 @@ public class G13Sender extends StaticWidget {
         try {
             image = ImageIO.read(getClass().getResource("/team2485/smartdashboard/extension/res/G13.png"));
             imageActivity = ImageIO.read(getClass().getResource("/team2485/smartdashboard/extension/res/G13-activity.png"));
-        } catch (IOException e) { }
+        } catch (IOException ex) {
+            System.err.println("Could not load G13 images.");
+            ex.printStackTrace();
+        }
 
         // <editor-fold defaultstate="collapsed" desc="Keystroke -> G key map">
-        keystrokeMap = new HashMap<>(24);
+
+        keystrokeMap = new HashMap<>(NUM_KEYS);
         keystrokeMap.put('Q', 1);
         keystrokeMap.put('W', 2);
         keystrokeMap.put('E', 3);
@@ -87,6 +93,7 @@ public class G13Sender extends StaticWidget {
 
         keystrokeMap.put('L', 23);
         keystrokeMap.put('.', 24);
+
         // </editor-fold>
     }
 
@@ -97,37 +104,7 @@ public class G13Sender extends StaticWidget {
         GlobalScreen.getInstance().addNativeKeyListener(new NativeKeyListener() {
             @Override
             public void nativeKeyPressed(NativeKeyEvent nke) {
-                synchronized (keyLock) {
-                    if (nke.getModifiers() == 11) { // ctrl + shift + alt
-                        switch (nke.getKeyCode()) {
-                            case NativeKeyEvent.VK_CONTROL:
-                            case NativeKeyEvent.VK_SHIFT:
-                            case NativeKeyEvent.VK_ALT:
-                                break;
-                            default: {
-                                try {
-                                    final int key = keystrokeMap.get((char)nke.getKeyCode());
-                                    table.putBoolean(Integer.toString(key), true);
-                                    keysPressed[key - 1] = true;
-                                    System.out.println("Pressed G" + key);
-
-                                    activity = true;
-                                    repaint();
-                                    if (activityFuture != null) activityFuture.cancel(false);
-                                    activityFuture = activityExec.schedule(hideActivity, 500, TimeUnit.MILLISECONDS);
-                                }
-                                catch (NullPointerException ex) {
-                                    System.err.println("Could not map key press '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void nativeKeyReleased(NativeKeyEvent nke) {
-                synchronized (keyLock) {
+                if (nke.getModifiers() == 11) { // ctrl + shift + alt
                     switch (nke.getKeyCode()) {
                         case NativeKeyEvent.VK_CONTROL:
                         case NativeKeyEvent.VK_SHIFT:
@@ -136,14 +113,55 @@ public class G13Sender extends StaticWidget {
                         default: {
                             try {
                                 final int key = keystrokeMap.get((char)nke.getKeyCode());
-                                if (keysPressed[key - 1]) {
-                                    table.putBoolean(Integer.toString(key), false);
-                                    keysPressed[key - 1] = false;
-                                    System.out.println("Released G" + key);
-                                }
+                                table.putBoolean(Integer.toString(key), true);
+                                keyPressTime[key - 1] = System.currentTimeMillis();
+                                System.out.println("Pressed G" + key);
+
+                                activity = true;
+                                repaint();
+                                if (activityFuture != null) activityFuture.cancel(false);
+                                activityFuture = exec.schedule(hideActivity, 400, TimeUnit.MILLISECONDS);
                             }
                             catch (NullPointerException ex) {
+                                System.err.println("Could not map key press '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
                             }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void nativeKeyReleased(NativeKeyEvent nke) {
+                switch (nke.getKeyCode()) {
+                    case NativeKeyEvent.VK_CONTROL:
+                    case NativeKeyEvent.VK_SHIFT:
+                    case NativeKeyEvent.VK_ALT:
+                        break;
+                    default: {
+                        try {
+                            final int key = keystrokeMap.get((char)nke.getKeyCode());
+                            if (keyPressTime[key - 1] != 0) {
+                                final long time = System.currentTimeMillis();
+                                if (time - keyPressTime[key - 1] < MIN_RELEASE_TIME) {
+                                    // minimum time between press and release not elapsed, so schedule the release
+                                    exec.schedule(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            table.putBoolean(Integer.toString(key), false);
+                                            keyPressTime[key - 1] = 0;
+                                            System.out.println("Released G" + key + " delayed");
+                                        }
+                                    }, MIN_RELEASE_TIME - (time - keyPressTime[key - 1]), TimeUnit.MILLISECONDS);
+                                }
+                                else {
+                                    // otherwise do it now!
+                                    table.putBoolean(Integer.toString(key), false);
+                                    keyPressTime[key - 1] = 0;
+                                    System.out.println("Released G" + key + " immediately");
+                                }
+                            }
+                        }
+                        catch (NullPointerException ex) {
                         }
                     }
                 }
