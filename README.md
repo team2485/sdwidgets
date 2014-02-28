@@ -8,29 +8,29 @@ Read more about how to use SmartDashboard [here](http://wpilib.screenstepslive.c
 Widgets
 -------
 
-| Widget                                                | Class                               |
-| ----------------------------------------------------- | ----------------------------------  |
-| Air tank widget                                       | `AirTankWidget`                     |
-| Small air tank widget                                 | `AirTankWidgetS`                    |
-| Odin intake arm position widget                       | `ArmPot`                            |
-| Autonomous mode chooser                               | `AutoChooser`                       |
-| Axis camera image processor                           | `AxisCameraProcessor2`              |
-| Background left/right sides (fancy background images) | `BackgroundLeft`, `BackgroundRight` |
-| Battery voltage indicator                             | `BatteryWidget`                     |
-| Odin frame image                                      | `Bot`                               |
-| Better booleans                                       | `CoolBool`                          |
-| Debug region indicator (hidden behind DS)             | `DebugRegion`                       |
-| Field position/distance                               | `FieldWidget`                       |
-| Logitech G13 G-key input sender                       | `G13Sender`                         |
-| Large text                                            | `LargeText`                         |
-| Light mode switcher                                   | `LightSwitcher`                     |
-| Robot data logger (saves logs to file)                | `Logger`                            |
-| Logo connection indicator and background setter       | `Logo`                              |
-| Nyan cats (static and data-driven)                    | `NyanCat`, `StaticNyanCat`          |
-| Pandaboard connection indicator (happy panda)         | `PandaboardIndicator`               |
-| Potentiometer value, reset, and ready state indicator | `PotWidget`                         |
-| Guitar Hero X-plorer strummer axis sender             | `StrummerSender`                    |
-| Toggle button (displays and sends a boolean)          | `ToggleButton`                      |
+| Widget                                                | Class                      |
+| ----------------------------------------------------- | -------------------------- |
+| Air tank widget                                       | `AirTankWidget`            |
+| Small air tank widget                                 | `AirTankWidgetS`           |
+| Odin intake arm position widget                       | `ArmPot`                   |
+| Autonomous mode chooser                               | `AutoChooser`              |
+| Axis camera image processor                           | `AxisCameraProcessor2`     |
+| Background and logo connection indicator              | `Background`               |
+| Battery voltage indicator                             | `BatteryWidget`            |
+| Odin frame image                                      | `Bot`                      |
+| Better booleans                                       | `CoolBool`                 |
+| Debug region indicator (hidden behind DS)             | `DebugRegion`              |
+| Odin Horns Spinner (enabled on boolean)               | `OdinSpinner`              |
+| Field position/distance                               | `FieldWidget`              |
+| Logitech G13 G-key input sender                       | `G13Sender`                |
+| Large text                                            | `LargeText`                |
+| Light mode switcher                                   | `LightSwitcher`            |
+| Robot data logger (saves logs to file)                | `Logger`                   |
+| Nyan cats (static and data-driven)                    | `NyanCat`, `StaticNyanCat` |
+| Pandaboard connection indicator (happy panda)         | `PandaboardIndicator`      |
+| Potentiometer value, reset, and ready state indicator | `PotWidget`                |
+| Guitar Hero X-plorer strummer axis sender             | `StrummerSender`           |
+| Toggle button (displays and sends a boolean)          | `ToggleButton`             |
 
 Notes
 -----
