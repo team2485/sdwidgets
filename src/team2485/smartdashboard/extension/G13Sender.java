@@ -26,10 +26,13 @@ import org.jnativehook.keyboard.NativeKeyListener;
  */
 public class G13Sender extends StaticWidget {
     public static final String NAME = "G13 Sender";
-    
+
     private NetworkTable table;
     private BufferedImage image, imageActivity;
-    
+
+    private boolean[] keysPressed = new boolean[24];
+    private final Object keyLock = new Object();
+
     private boolean activity;
     private final HashMap<Character, Integer> keystrokeMap;
     private final ScheduledExecutorService activityExec = Executors.newSingleThreadScheduledExecutor();
@@ -53,7 +56,7 @@ public class G13Sender extends StaticWidget {
             image = ImageIO.read(getClass().getResource("/team2485/smartdashboard/extension/res/G13.png"));
             imageActivity = ImageIO.read(getClass().getResource("/team2485/smartdashboard/extension/res/G13-activity.png"));
         } catch (IOException e) { }
-        
+
         // <editor-fold defaultstate="collapsed" desc="Keystroke -> G key map">
         keystrokeMap = new HashMap<>(24);
         keystrokeMap.put('Q', 1);
@@ -63,7 +66,7 @@ public class G13Sender extends StaticWidget {
         keystrokeMap.put('T', 5);
         keystrokeMap.put('Y', 6);
         keystrokeMap.put('U', 7);
-        
+
         keystrokeMap.put('A', 8);
         keystrokeMap.put('S', 9);
         keystrokeMap.put('D', 10);
@@ -71,17 +74,17 @@ public class G13Sender extends StaticWidget {
         keystrokeMap.put('G', 12);
         keystrokeMap.put('H', 13);
         keystrokeMap.put('J', 14);
-        
+
         keystrokeMap.put('Z', 15);
         keystrokeMap.put('X', 16);
         keystrokeMap.put('C', 17);
         keystrokeMap.put('V', 18);
         keystrokeMap.put('B', 19);
-        
+
         keystrokeMap.put('N', 20);
         keystrokeMap.put('M', 21);
         keystrokeMap.put(',', 22);
-        
+
         keystrokeMap.put('L', 23);
         keystrokeMap.put('.', 24);
         // </editor-fold>
@@ -94,24 +97,28 @@ public class G13Sender extends StaticWidget {
         GlobalScreen.getInstance().addNativeKeyListener(new NativeKeyListener() {
             @Override
             public void nativeKeyPressed(NativeKeyEvent nke) {
-                if (nke.getModifiers() == 11) { // ctrl + shift + alt
-                    switch (nke.getKeyCode()) {
-                        case NativeKeyEvent.VK_CONTROL:
-                        case NativeKeyEvent.VK_SHIFT:
-                        case NativeKeyEvent.VK_ALT:
-                            break;
-                        default: {
-                            try {
-                                final int key = keystrokeMap.get((char)nke.getKeyCode());
-                                table.putBoolean(Integer.toString(key), true);
-                                
-                                activity = true;
-                                repaint();
-                                if (activityFuture != null) activityFuture.cancel(false);
-                                activityFuture = activityExec.schedule(hideActivity, 500, TimeUnit.MILLISECONDS);
-                            }
-                            catch (NullPointerException ex) {
-                                System.err.println("Could not map key press '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
+                synchronized (keyLock) {
+                    if (nke.getModifiers() == 11) { // ctrl + shift + alt
+                        switch (nke.getKeyCode()) {
+                            case NativeKeyEvent.VK_CONTROL:
+                            case NativeKeyEvent.VK_SHIFT:
+                            case NativeKeyEvent.VK_ALT:
+                                break;
+                            default: {
+                                try {
+                                    final int key = keystrokeMap.get((char)nke.getKeyCode());
+                                    table.putBoolean(Integer.toString(key), true);
+                                    keysPressed[key - 1] = true;
+                                    System.out.println("Pressed G" + key);
+
+                                    activity = true;
+                                    repaint();
+                                    if (activityFuture != null) activityFuture.cancel(false);
+                                    activityFuture = activityExec.schedule(hideActivity, 500, TimeUnit.MILLISECONDS);
+                                }
+                                catch (NullPointerException ex) {
+                                    System.err.println("Could not map key press '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
+                                }
                             }
                         }
                     }
@@ -120,7 +127,7 @@ public class G13Sender extends StaticWidget {
 
             @Override
             public void nativeKeyReleased(NativeKeyEvent nke) {
-                if (nke.getModifiers() == 11) { // ctrl + shift + alt
+                synchronized (keyLock) {
                     switch (nke.getKeyCode()) {
                         case NativeKeyEvent.VK_CONTROL:
                         case NativeKeyEvent.VK_SHIFT:
@@ -129,10 +136,13 @@ public class G13Sender extends StaticWidget {
                         default: {
                             try {
                                 final int key = keystrokeMap.get((char)nke.getKeyCode());
-                                table.putBoolean(Integer.toString(key), false);
+                                if (keysPressed[key - 1]) {
+                                    table.putBoolean(Integer.toString(key), false);
+                                    keysPressed[key - 1] = false;
+                                    System.out.println("Released G" + key);
+                                }
                             }
                             catch (NullPointerException ex) {
-                                System.err.println("Could not map key release '" + (char)nke.getKeyCode() + "' (" + nke.getKeyCode() + ").");
                             }
                         }
                     }
@@ -143,21 +153,21 @@ public class G13Sender extends StaticWidget {
             public void nativeKeyTyped(NativeKeyEvent nke) {
             }
         });
-        
+
         try {
             GlobalScreen.registerNativeHook();
         }
         catch (NativeHookException ex) {
             System.err.println("Could not register native key hook!");
             ex.printStackTrace();
-            
+
             String confirm;
             do {
                 confirm = JOptionPane.showInputDialog(null, "WARNING: Could not register native key hook. This means the G13 is UNUSABLE!\nEnter \"OK\" to dismiss.\n\n" + ex.getMessage(), "G13 Sender", JOptionPane.ERROR_MESSAGE);
             } while (!confirm.equalsIgnoreCase("ok"));
         }
     }
-    
+
     @Override
     protected void paintComponent(Graphics gg) {
         Graphics2D g = (Graphics2D)gg;
