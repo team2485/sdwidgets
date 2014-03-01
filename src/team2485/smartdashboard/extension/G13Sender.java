@@ -28,12 +28,13 @@ public class G13Sender extends StaticWidget {
     public static final String NAME = "G13 Sender";
 
     private static final int NUM_KEYS = 24;
-    private static final long MIN_RELEASE_TIME = 30L;
+    private static final long MIN_RELEASE_TIME = 100L;
 
     private NetworkTable table;
     private BufferedImage image, imageActivity;
 
     private final long[] keyPressTime = new long[NUM_KEYS];
+    private final ScheduledFuture[] keyPressFutures = new ScheduledFuture[NUM_KEYS];
 
     private boolean activity;
     private final HashMap<Character, Integer> keystrokeMap;
@@ -115,6 +116,7 @@ public class G13Sender extends StaticWidget {
                                 final int key = keystrokeMap.get((char)nke.getKeyCode());
                                 table.putBoolean(Integer.toString(key), true);
                                 keyPressTime[key - 1] = System.currentTimeMillis();
+                                if (keyPressFutures[key - 1] != null) keyPressFutures[key - 1].cancel(false);
                                 System.out.println("Pressed G" + key);
 
                                 activity = true;
@@ -142,14 +144,16 @@ public class G13Sender extends StaticWidget {
                             final int key = keystrokeMap.get((char)nke.getKeyCode());
                             if (keyPressTime[key - 1] != 0) {
                                 final long time = System.currentTimeMillis();
+                                System.out.println(time - keyPressTime[key - 1]);
                                 if (time - keyPressTime[key - 1] < MIN_RELEASE_TIME) {
                                     // minimum time between press and release not elapsed, so schedule the release
-                                    exec.schedule(new Runnable() {
+                                    keyPressFutures[key - 1] = exec.schedule(new Runnable() {
                                         @Override
                                         public void run() {
                                             table.putBoolean(Integer.toString(key), false);
                                             keyPressTime[key - 1] = 0;
                                             System.out.println("Released G" + key + " delayed");
+                                            keyPressFutures[key - 1] = null;
                                         }
                                     }, MIN_RELEASE_TIME - (time - keyPressTime[key - 1]), TimeUnit.MILLISECONDS);
                                 }
