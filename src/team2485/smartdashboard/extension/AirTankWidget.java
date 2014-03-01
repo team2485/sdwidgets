@@ -100,7 +100,7 @@ public class AirTankWidget extends Widget {
 
     @Override
     protected void paintComponent(final Graphics gg) {
-        X = Math.min(getWidth(), getHeight() * 2);
+        X = (int)Math.min(getWidth(), getHeight() * 1.7);
         //this.setSize(X, getHeight());
 
         MAX_DRAW_WIDTH = (int)(X*.92);
@@ -116,6 +116,11 @@ public class AirTankWidget extends Widget {
         } else if ((value > 90) && (value <= 120)) {
             R = (int) 255 - ((value - 90) * ((value - 90) / 3.66));
             G = ((value - 90) * ((value - 90) / 14.05)) + 131;
+            B = 0;
+        } else if (value > 120){
+            R = 0;
+            G = 195;
+            B = 0;
         }
         color = (new java.awt.Color(((int) R), ((int) G), ((int) B)));
         final Graphics2D g = (Graphics2D) gg;
@@ -128,15 +133,13 @@ public class AirTankWidget extends Widget {
             }
             g.setColor(color);
             g.fillRoundRect(X/23, X/15, drawWidth, (int)(X/2.7), 8, 8);
-            color = RotateColorCW(color);
-            color = InvertColor(color);
             //System.out.println(color);
-            g.setColor(color);
+            g.setColor(Color.GREEN);
             g.setFont(new Font("Ubuntu",Font.BOLD,(X/8)));
-            g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
+            g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
             g.setFont(new Font("Consolas",0,(X/16)));
-            g.drawString("PSI", (int)(X/2.2+g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight()/2);
-            g.drawString("." + (int)value%1 , (int)((X/2.2) + g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/3.5) + g.getFontMetrics().getHeight());
+            g.drawString("PSI", (int)(X/2.2+g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
+            g.drawString("." + (int)value%1 , (int)((X/2.2) + g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/1.97) + g.getFontMetrics().getHeight());
 
         }
         g.drawImage(airtank, 0, 0, (X), (X/2), this);

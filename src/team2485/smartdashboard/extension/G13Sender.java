@@ -26,10 +26,10 @@ import org.jnativehook.keyboard.NativeKeyListener;
  */
 public class G13Sender extends StaticWidget {
     public static final String NAME = "G13 Sender";
-    
+
     private NetworkTable table;
     private BufferedImage image, imageActivity;
-    
+
     private boolean activity;
     private final HashMap<Character, Integer> keystrokeMap;
     private final ScheduledExecutorService activityExec = Executors.newSingleThreadScheduledExecutor();
@@ -53,7 +53,7 @@ public class G13Sender extends StaticWidget {
             image = ImageIO.read(getClass().getResource("/team2485/smartdashboard/extension/res/G13.png"));
             imageActivity = ImageIO.read(getClass().getResource("/team2485/smartdashboard/extension/res/G13-activity.png"));
         } catch (IOException e) { }
-        
+
         // <editor-fold defaultstate="collapsed" desc="Keystroke -> G key map">
         keystrokeMap = new HashMap<>(24);
         keystrokeMap.put('Q', 1);
@@ -63,7 +63,7 @@ public class G13Sender extends StaticWidget {
         keystrokeMap.put('T', 5);
         keystrokeMap.put('Y', 6);
         keystrokeMap.put('U', 7);
-        
+
         keystrokeMap.put('A', 8);
         keystrokeMap.put('S', 9);
         keystrokeMap.put('D', 10);
@@ -71,17 +71,17 @@ public class G13Sender extends StaticWidget {
         keystrokeMap.put('G', 12);
         keystrokeMap.put('H', 13);
         keystrokeMap.put('J', 14);
-        
+
         keystrokeMap.put('Z', 15);
         keystrokeMap.put('X', 16);
         keystrokeMap.put('C', 17);
         keystrokeMap.put('V', 18);
         keystrokeMap.put('B', 19);
-        
+
         keystrokeMap.put('N', 20);
         keystrokeMap.put('M', 21);
         keystrokeMap.put(',', 22);
-        
+
         keystrokeMap.put('L', 23);
         keystrokeMap.put('.', 24);
         // </editor-fold>
@@ -104,7 +104,7 @@ public class G13Sender extends StaticWidget {
                             try {
                                 final int key = keystrokeMap.get((char)nke.getKeyCode());
                                 table.putBoolean(Integer.toString(key), true);
-                                
+
                                 activity = true;
                                 repaint();
                                 if (activityFuture != null) activityFuture.cancel(false);
@@ -143,21 +143,21 @@ public class G13Sender extends StaticWidget {
             public void nativeKeyTyped(NativeKeyEvent nke) {
             }
         });
-        
+
         try {
             GlobalScreen.registerNativeHook();
         }
         catch (NativeHookException ex) {
             System.err.println("Could not register native key hook!");
             ex.printStackTrace();
-            
+
             String confirm;
             do {
                 confirm = JOptionPane.showInputDialog(null, "WARNING: Could not register native key hook. This means the G13 is UNUSABLE!\nEnter \"OK\" to dismiss.\n\n" + ex.getMessage(), "G13 Sender", JOptionPane.ERROR_MESSAGE);
             } while (!confirm.equalsIgnoreCase("ok"));
         }
     }
-    
+
     @Override
     protected void paintComponent(Graphics gg) {
         Graphics2D g = (Graphics2D)gg;
