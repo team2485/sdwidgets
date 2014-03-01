@@ -1,6 +1,8 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
+import edu.wpi.first.smartdashboard.properties.BooleanProperty;
+import edu.wpi.first.smartdashboard.properties.DoubleProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.*;
@@ -16,7 +18,7 @@ public class AirTankWidget extends Widget {
     private static final double MAX_VAL = 120, MIN_VAL = 0;
 
     private int MAX_DRAW_WIDTH = 132;
-    private double value = 0;
+    private double value = 0000;
     private int drawWidth = 0;
     private int X = 0;
     private Color color = Color.RED;
@@ -24,6 +26,8 @@ public class AirTankWidget extends Widget {
     private double G;
     private double B;
     private String text;
+    private Property prop;
+    private Property propval;
 
     private BufferedImage airtank;
 
@@ -37,6 +41,9 @@ public class AirTankWidget extends Widget {
         this.setSize(size);
         this.setPreferredSize(size);
         this.setMinimumSize(new Dimension(10,7));
+
+        prop = new BooleanProperty(this, "Smoothing",true);
+        propval = new DoubleProperty(this, "Smoothing Mulltipyler (0.0 - 0.9)", .8);
         this.setMaximumSize(new Dimension(400,200));
 
 //        new Thread(new Runnable() {
@@ -48,7 +55,7 @@ public class AirTankWidget extends Widget {
 //                } catch (InterruptedException ex) { }
 //                value ++;
 //                //System.out.println(value);
-//                setValue(text);
+//                setValue(value);
 //                if (value > 120)
 //                    value = 0;
 //            }
@@ -62,41 +69,45 @@ public class AirTankWidget extends Widget {
 
     @Override
     public void setValue(Object o) {
-        value = ((Number) o).doubleValue();
+        prop.getValue();
+        if (prop.getValue().equals(true)){
+            value = (value*(.8)) + (((Number) o).doubleValue()*(1-(.8)));
+            System.out.println("");
+        } else {
+            value = ((Number) o).doubleValue();
+        }
         text = (int)value + "";
-
-
         repaint();
     }
 
-    private Color RotateColorCW(Color color){
-        int R;
-        int G;
-        int B;
-        B = color.getRed();
-        R = color.getGreen();
-        G = color.getBlue();
-        color = (new java.awt.Color(R, G, B));
-        return color;
-    }
-    private Color RotateColorCCW(Color color){
-        int R;
-        int G;
-        int B;
-        B = color.getGreen();
-        R = color.getBlue();
-        G = color.getRed();
-        color = (new java.awt.Color(R, G, B));
-        return color;
-    }
-    private Color InvertColor(Color color){
-        int R = (255-color.getRed());
-        int G = (255-color.getGreen());
-        int B = (255-color.getBlue());
-
-        color = (new java.awt.Color(R, G, B));
-        return color;
-    }
+//    private Color RotateColorCW(Color color){
+//        int R;
+//        int G;
+//        int B;
+//        B = color.getRed();
+//        R = color.getGreen();
+//        G = color.getBlue();
+//        color = (new java.awt.Color(R, G, B));
+//        return color;
+//    }
+//    private Color RotateColorCCW(Color color){
+//        int R;
+//        int G;
+//        int B;
+//        B = color.getGreen();
+//        R = color.getBlue();
+//        G = color.getRed();
+//        color = (new java.awt.Color(R, G, B));
+//        return color;
+//    }
+//    private Color InvertColor(Color color){
+//        int R = (255-color.getRed());
+//        int G = (255-color.getGreen());
+//        int B = (255-color.getBlue());
+//
+//        color = (new java.awt.Color(R, G, B));
+//        return color;
+//    }
 
     @Override
     protected void paintComponent(final Graphics gg) {
@@ -138,9 +149,12 @@ public class AirTankWidget extends Widget {
             g.setFont(new Font("Ubuntu",Font.BOLD,(X/8)));
             g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
             g.setFont(new Font("Consolas",0,(X/16)));
-            g.drawString("PSI", (int)(X/2.2+g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
-            g.drawString("." + (int)value%1 , (int)((X/2.2) + g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)), (int)(X/1.97) + g.getFontMetrics().getHeight());
-
+            g.drawString("PSI", (int)(X + (g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)))/2, (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
+            if ((prop.getValue().equals(true))){
+                g.drawString("~", (int)(X/2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)/2), (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
+            }
+            //g.drawString("." + (int)value%1 , (int)(X + (g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)))/2, (int)(X/1.97) + g.getFontMetrics().getHeight());
+            System.out.println(prop.getValue().equals(true));
         }
         g.drawImage(airtank, 0, 0, (X), (X/2), this);
 
