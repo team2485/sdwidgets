@@ -84,15 +84,13 @@ public class AirTankWidget extends Widget {
     public void setValue(Object o) {
         if (prop.getValue().equals(true)) {
             System.out.println(value * ((double) propval.getValue()));
-            text = (int) ((Number) o).doubleValue() + "";
             value = (value * ((double) propval.getValue())) + (((Number) o).doubleValue() * (1 - ((double) propval.getValue())));
 
             System.out.println((value));
         } else {
             value = ((Number) o).doubleValue();
-            text = (int) value + "";
         }
-
+        text = (int) value + "";
         repaint();
     }
 
