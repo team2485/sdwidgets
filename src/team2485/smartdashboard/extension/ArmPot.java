@@ -1,6 +1,7 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
+import edu.wpi.first.smartdashboard.properties.IntegerProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.*;
@@ -32,10 +33,15 @@ public class ArmPot extends Widget {
     private int hyp;
     private int i = 0;
 
+    Property potset;
+    Property style;
+
     private BufferedImage arm, armS, circle, circleS;
 
     @Override
     public void init() {
+        potset = new IntegerProperty(this, "Potentiometer Offset", 2427);
+        //style = new IntegerProperty(this, "Style", 0);
         try {
             arm = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm.png"));
             armS = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c.png"));
@@ -52,7 +58,7 @@ public class ArmPot extends Widget {
         final BorderLayout layout = new BorderLayout(0, 0);
         this.setLayout(layout);
 
-        for (int r = 0; r > preVal.length - 1; r++) {
+        for (int r = 0; r > preVal.length; r++) {
             preVal[r] = 2000;
         }
 
@@ -64,9 +70,8 @@ public class ArmPot extends Widget {
 //                        Thread.sleep(30);
 //                    } catch (InterruptedException ex) { }
 //                    rawPotVal = rawPotVal + 10;
-//                    //System.out.println(value);
-//                    setValue(arm);
-//                    //rawPotVal=rawPotVal + (int)((Math.random()-.5)*10);
+//
+//                    setValue(rawPotVal);
 //                    if (rawPotVal > 30001) {
 //                        rawPotVal = 20001;
 //                    }
@@ -81,7 +86,7 @@ public class ArmPot extends Widget {
 
     @Override
     public void setValue(Object o) {
-        //rawPotVal = ((Number) o).intValue();
+        rawPotVal = ((Number) o).intValue();
         if (value == 0) {
             value = ((Number) o).intValue();
             value = (int) value / 10;
@@ -95,10 +100,17 @@ public class ArmPot extends Widget {
             if (((rawPotVal % 10) == 1) || ((rawPotVal % 10) == 0)) {
                 //System.out.println(value);
                 spin = (int) (rawPotVal % 10);
-                value = ((preVal[0] + preVal[1] + preVal[2] + preVal[3] + preVal[4]) / 5);
+                value = 0;
+                for (int j = 0; j < preVal.length; j++) {
+                    value += (preVal[j])/preVal.length;
+                }
+
+
+            }
+                //value = ((preVal[0] + preVal[1] + preVal[2] + preVal[3] + preVal[4]) / 5);
                 //System.out.println(value);
             }
-        }
+
 
         deca = (value - 2427) / 4;
         if (((value) > 2826) && ((value) < 2844)) {
@@ -114,7 +126,7 @@ public class ArmPot extends Widget {
         } else {
             color = Color.yellow;
         }
-        decb = (value - 2427) / 4;
+        decb = (value - (int)potset.getValue()) / 4;
         repaint();
     }
 
