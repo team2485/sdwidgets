@@ -26,41 +26,53 @@ public class AirTankWidget extends Widget {
     private double R;
     private double G;
     private double B;
+    private double stylemulti1;
+    private double stylemulti2;
     private String text;
     private Property prop;
     private Property propval;
+    private Property style;
 
     private BufferedImage airtank;
+    private BufferedImage airtank2;
 
     @Override
     public void init() {
         try {
             airtank = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/Tank.png"));
-        } catch (IOException e) { }
+        } catch (IOException e) {
+        }
+        try {
+            airtank2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/Tank2.png"));
+        } catch (IOException e) {
+        }
 
         final Dimension size = new Dimension(300, 140);
         this.setSize(size);
         this.setPreferredSize(size);
-        this.setMinimumSize(new Dimension(10,7));
+        this.setMinimumSize(new Dimension(10, 7));
 
-        prop = new BooleanProperty(this, "Smoothing",true);
+        prop = new BooleanProperty(this, "Smoothing", true);
         propval = new DoubleProperty(this, "Smoothing Mulltipyler (0.0 - 0.9)", .8);
-        this.setMaximumSize(new Dimension(400,200));
+        style = new BooleanProperty(this, "Style", true);
+        this.setMaximumSize(new Dimension(400, 200));
 
 //        new Thread(new Runnable() {
 //            @Override
-//            public void run(){
-//            while(true){
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException ex) { }
-//                val ++;
-//                //System.out.println(value);
-//                setValue(val);
-//                if (val > 120)
-//                    val = 0;
+//            public void run() {
+//                while (true) {
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException ex) {
+//                    }
+//                    val++;
+//                    //System.out.println(value);
+//                    setValue(val);
+//                    if (val > 120) {
+//                        val = 0;
+//                    }
+//                }
 //            }
-//        }
 //        }).start();
     }
 
@@ -70,15 +82,15 @@ public class AirTankWidget extends Widget {
 
     @Override
     public void setValue(Object o) {
-        if (prop.getValue().equals(true)){
-            System.out.println(value*((double)propval.getValue()));
-            text = (int)value + "";
-            value = (value*((double)propval.getValue())) + (((Number) o).doubleValue()*(1-((double)propval.getValue())));
+        if (prop.getValue().equals(true)) {
+            System.out.println(value * ((double) propval.getValue()));
+            text = (int) ((Number) o).doubleValue() + "";
+            value = (value * ((double) propval.getValue())) + (((Number) o).doubleValue() * (1 - ((double) propval.getValue())));
 
-            System.out.println((value)) ;
+            System.out.println((value));
         } else {
             value = ((Number) o).doubleValue();
-            text = (int)value + "";
+            text = (int) value + "";
         }
 
         repaint();
@@ -112,14 +124,11 @@ public class AirTankWidget extends Widget {
 //        color = (new java.awt.Color(R, G, B));
 //        return color;
 //    }
-
     @Override
     protected void paintComponent(final Graphics gg) {
-        X = (int)Math.min(getWidth(), getHeight() * 1.7);
+        X = (int) Math.min(getWidth(), getHeight() * 1.7);
         //this.setSize(X, getHeight());
 
-        MAX_DRAW_WIDTH = (int)(X*.92);
-        drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
         if (value <= 60) {
             R = 251;
             G = 0;
@@ -132,7 +141,7 @@ public class AirTankWidget extends Widget {
             R = (int) 255 - ((value - 90) * ((value - 90) / 3.66));
             G = ((value - 90) * ((value - 90) / 14.05)) + 131;
             B = 0;
-        } else if (value > 120){
+        } else if (value > 120) {
             R = 0;
             G = 195;
             B = 0;
@@ -140,27 +149,65 @@ public class AirTankWidget extends Widget {
         color = (new java.awt.Color(((int) R), ((int) G), ((int) B)));
         final Graphics2D g = (Graphics2D) gg;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (drawWidth > 0) {
-            g.setColor(new java.awt.Color(100, 100, 100, 100));
-            g.fillRoundRect((X/23), (X/15), MAX_DRAW_WIDTH, (int)(X/2.7), 8, 8);
-            if (drawWidth > MAX_DRAW_WIDTH) {
-                drawWidth = MAX_DRAW_WIDTH;
+        if (value > 0) {
+
+            if ((style.getValue().equals(true))) {
+                MAX_DRAW_WIDTH = (int) (X * .92);
+                drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
+
+                g.setColor(new java.awt.Color(100, 100, 100, 100));
+                g.fillRoundRect((X / 23), (X / 15), MAX_DRAW_WIDTH, (int) (X / 2.7), 8, 8);
+
+                if (drawWidth > MAX_DRAW_WIDTH) {
+                    drawWidth = MAX_DRAW_WIDTH;
+                }
+
+                g.setColor(color);
+                g.fillRoundRect(X / 23, X / 15, drawWidth, (int) (X / 2.7), 8, 8);
+
+                g.setColor(Color.GREEN);
+                g.setFont(new Font("Ubuntu", Font.BOLD, (X / 8)));
+                g.drawString(text, (X - g.getFontMetrics().stringWidth(text)) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
+
+                g.setFont(new Font("Consolas", 0, (X / 16)));
+                g.drawString("PSI", (int) (X + (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 8))).stringWidth(text))) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
+
+                if ((prop.getValue().equals(true))) {
+                    g.setFont(new Font("Consolas", 0, (X / 10)));
+                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 8))).stringWidth(text) / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
+                }
+
+                g.drawImage(airtank, 0, 0, (X), (X / 2), this);
+
+            } else {
+
+                if (drawWidth > MAX_DRAW_WIDTH) {
+                    drawWidth = MAX_DRAW_WIDTH;
+                }
+
+                MAX_DRAW_WIDTH = (int) (X * .79);
+                drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
+
+                stylemulti1 = (X/2) * (0.24285714285);
+                stylemulti2 = (X/2) * (0.47285714285);
+
+                System.out.println(stylemulti1 + " " + stylemulti2);
+                g.setColor(color);
+                g.fillRoundRect(X / 10, (int) stylemulti1, drawWidth, (int) stylemulti2, X / 15, X / 15);
+
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("Ubuntu", Font.PLAIN, X / 11));
+                g.drawString(text + " PSI", (X - g.getFontMetrics().stringWidth(text + "PSI")) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
+
+                if ((prop.getValue().equals(true))) {
+                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics().stringWidth(text + "PSI") / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
+                }
+
+                g.drawImage(airtank2, 0, 0, (X), (X / 2), this);
             }
-            g.setColor(color);
-            g.fillRoundRect(X/23, X/15, drawWidth, (int)(X/2.7), 8, 8);
-            //System.out.println(color);
-            g.setColor(Color.GREEN);
-            g.setFont(new Font("Ubuntu",Font.BOLD,(X/8)));
-            g.drawString(text, (X-g.getFontMetrics().stringWidth(text))/2, (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
-            g.setFont(new Font("Consolas",0,(X/16)));
-            g.drawString("PSI", (int)(X + (g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)))/2, (int)(X/1.97) + g.getFontMetrics().getHeight()/2);
-            if ((prop.getValue().equals(true))){
-                g.setFont(new Font("Consolas",0,(X/10)));
-                g.drawString("~", (int)(X/2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)/2), (int)(X/1.97) + g.getFontMetrics().getHeight()/4);
-            }
+
             //g.drawString("." + (int)value%1 , (int)(X + (g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)))/2, (int)(X/1.97) + g.getFontMetrics().getHeight());
         }
-        g.drawImage(airtank, 0, 0, (X), (X/2), this);
 
     }
 }
