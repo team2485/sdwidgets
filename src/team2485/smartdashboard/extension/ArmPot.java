@@ -1,6 +1,7 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
+//import edu.wpi.first.smartdashboard.gui.elements.bindings.AbstractValueWidget;
 import edu.wpi.first.smartdashboard.properties.IntegerProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
@@ -8,7 +9,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.*;
 
 public class ArmPot extends Widget {
 
@@ -22,7 +22,6 @@ public class ArmPot extends Widget {
     public int LY;
     private double value = 2000;
     private int rawPotVal = 25990;
-    private final int preVal[] = new int[5];
     public int armX;
     public int armY;
     private double deca = 0;
@@ -32,16 +31,27 @@ public class ArmPot extends Widget {
     private String string;
     private int hyp;
     private int i = 0;
+    private final int[] preVal = new int[15];
+    private int offset;
+    private int length;
+    private int valueField;
+    //private int preval[] = new int[15];
 
     Property potset;
-    Property style;
+    Property smoothingfactor;
 
     private BufferedImage arm, armS, circle, circleS;
 
     @Override
     public void init() {
-        potset = new IntegerProperty(this, "Potentiometer Offset", 2427);
-        //style = new IntegerProperty(this, "Style", 0);
+        potset = new IntegerProperty(this, "Potentiometer Offset",2427);
+        smoothingfactor = new IntegerProperty(this, "Smoothing Factor",5);
+//        if (potset.getValue() == null){
+//            potset.setValue(2427);
+//        }
+//        if (smoothingfactor.getValue() == null){
+//            smoothingfactor.setValue(5);
+//        }
         try {
             arm = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm.png"));
             armS = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c.png"));
@@ -58,7 +68,7 @@ public class ArmPot extends Widget {
         final BorderLayout layout = new BorderLayout(0, 0);
         this.setLayout(layout);
 
-        for (int r = 0; r > preVal.length; r++) {
+        for (int r = 0; r > length; r++) {
             preVal[r] = 2000;
         }
 
@@ -82,16 +92,29 @@ public class ArmPot extends Widget {
 
     @Override
     public void propertyChanged(final Property prprt) {
+//        if (prprt == editable) {
+//            valueField.setEnabled(editable.getValue());
+//        }
     }
 
     @Override
     public void setValue(Object o) {
+        potset.setValue(potset.getSaveValue());
+        offset = (int)potset.getValue();
+        potset.setValue(potset.getValue());
+        potset.setSaveValue("Potentiometer Offset");
+        length = (int)smoothingfactor.getValue();
+        smoothingfactor.setSaveValue("Smoothing Factor");
+        if (length > preVal.length){
+            length = preVal.length;
+            smoothingfactor.setValue(preVal.length);
+        }
         rawPotVal = ((Number) o).intValue();
         if (value == 0) {
             value = ((Number) o).intValue();
             value = (int) value / 10;
         }
-        if (i >= preVal.length) {
+        if (i >= length) {
             i = 0;
         }
         preVal[i] = rawPotVal / 10;
@@ -101,8 +124,8 @@ public class ArmPot extends Widget {
                 //System.out.println(value);
                 spin = (int) (rawPotVal % 10);
                 value = 0;
-                for (int j = 0; j < preVal.length; j++) {
-                    value += (preVal[j])/preVal.length;
+                for (int j = 0; j < length; j++) {
+                    value += (preVal[j])/length;
                 }
 
 
@@ -112,16 +135,16 @@ public class ArmPot extends Widget {
             }
 
 
-        deca = (value - 2427) / 4;
-        if (((value) > 2826) && ((value) < 2844)) {
-            value = 2835;
+        deca = (value - (int)potset.getValue()  ) / 4;
+        if (((value) > (offset+399)) && ((value) < (offset+417))) {
+            value = offset+408;
             color = Color.cyan;
-        } else if ((value > 2985) && (value < 3015)) {
-            value = 3000;
+        } else if ((value > (offset+558)) && (value < (offset+583))) {
+            value = (offset+573);
             color = Color.cyan;
-        } else if ((value > 2800) && (value < 2870)) {
+        } else if ((value > (offset+373)) && (value < (offset+443))) {
             color = Color.green;
-        } else if ((value > 2975) && (value < 3025)) {
+        } else if ((value > (offset+548)) && (value < (offset+593))) {
             color = Color.orange;
         } else {
             color = Color.yellow;
