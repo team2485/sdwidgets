@@ -1,6 +1,7 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
+import edu.wpi.first.smartdashboard.properties.IntegerListProperty;
 //import edu.wpi.first.smartdashboard.gui.elements.bindings.AbstractValueWidget;
 import edu.wpi.first.smartdashboard.properties.IntegerProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
@@ -37,15 +38,15 @@ public class ArmPot extends Widget {
     private int valueField;
     //private int preval[] = new int[15];
 
-    Property potset;
-    Property smoothingfactor;
+    Property potset = new IntegerProperty(this, "Potentiometer Offset",2427);
+    Property smoothingfactor = new IntegerProperty(this, "Smoothing Factor",5);
+    //Property style = new IntegerProperty(this, "Style",2);
 
     private BufferedImage arm, armS, circle, circleS;
 
     @Override
     public void init() {
-        potset = new IntegerProperty(this, "Potentiometer Offset",2427);
-        smoothingfactor = new IntegerProperty(this, "Smoothing Factor",5);
+
 //        if (potset.getValue() == null){
 //            potset.setValue(2427);
 //        }
@@ -72,22 +73,22 @@ public class ArmPot extends Widget {
             preVal[r] = 2000;
         }
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    try {
-//                        Thread.sleep(30);
-//                    } catch (InterruptedException ex) { }
-//                    rawPotVal = rawPotVal + 10;
-//
-//                    setValue(rawPotVal);
-//                    if (rawPotVal > 30001) {
-//                        rawPotVal = 20001;
-//                    }
-//                }
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ex) { }
+                    rawPotVal = rawPotVal + 10;
+
+                    setValue(rawPotVal);
+                    if (rawPotVal > 30001) {
+                        rawPotVal = 20001;
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -99,12 +100,9 @@ public class ArmPot extends Widget {
 
     @Override
     public void setValue(Object o) {
-        potset.setValue(potset.getSaveValue());
+
         offset = (int)potset.getValue();
-        potset.setValue(potset.getValue());
-        potset.setSaveValue("Potentiometer Offset");
         length = (int)smoothingfactor.getValue();
-        smoothingfactor.setSaveValue("Smoothing Factor");
         if (length > preVal.length){
             length = preVal.length;
             smoothingfactor.setValue(preVal.length);

@@ -30,10 +30,9 @@ public class AirTankWidget extends Widget {
     private double stylemulti1;
     private double stylemulti2;
     private String text;
-    private Property prop;
-    private Property propval;
-    private Property style;
-
+    private final Property prop    = new BooleanProperty(this, "Smoothing", true);
+    private final Property propval = new DoubleProperty(this, "Smoothing Mulltipyler (0.0 - 0.9)", .8);
+    private final Property style   = new IntegerProperty(this, "Style (0 - 2)", 2);
     private BufferedImage airtank;
     private BufferedImage airtank2;
     private BufferedImage airtank3;
@@ -52,29 +51,27 @@ public class AirTankWidget extends Widget {
         this.setPreferredSize(size);
         this.setMinimumSize(new Dimension(10, 7));
 
-        prop = new BooleanProperty(this, "Smoothing", true);
-        propval = new DoubleProperty(this, "Smoothing Mulltipyler (0.0 - 0.9)", .8);
-        style = new IntegerProperty(this, "Style (0 - 2)", 2);
+
         this.setMaximumSize(new Dimension(4000, 2000));
         this.setValue(10);
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException ex) {
-//                    }
-//                    val++;
-//                    //System.out.println(value);
-//                    setValue(val);
-//                    if (val > 120) {
-//                        val = 0;
-//                    }
-//                }
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                    }
+                    val++;
+                    //System.out.println(value);
+                    setValue(val);
+                    if (val > 120) {
+                        val = 0;
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -84,10 +81,10 @@ public class AirTankWidget extends Widget {
     @Override
     public void setValue(Object o) {
         if (prop.getValue().equals(true)) {
-            System.out.println(value * ((double) propval.getValue()));
+            //System.out.println(value * ((double) propval.getValue()));
             value = (value * ((double) propval.getValue())) + (((Number) o).doubleValue() * (1 - ((double) propval.getValue())));
 
-            System.out.println((value));
+            //System.out.println((value));
         } else {
             value = ((Number) o).doubleValue();
         }
@@ -162,7 +159,7 @@ public class AirTankWidget extends Widget {
                 stylemulti1 = (X / 2) * (0.24285714285);
                 stylemulti2 = (X / 2) * (0.47285714285);
 
-                System.out.println(stylemulti1 + " " + stylemulti2);
+                //System.out.println(stylemulti1 + " " + stylemulti2);
                 g.setColor(color);
                 g.fillRoundRect(X / 10, (int) stylemulti1, drawWidth, (int) stylemulti2, X / 15, X / 15);
 
