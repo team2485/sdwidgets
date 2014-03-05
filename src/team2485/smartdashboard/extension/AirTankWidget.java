@@ -55,23 +55,23 @@ public class AirTankWidget extends Widget {
         this.setMaximumSize(new Dimension(4000, 2000));
         this.setValue(10);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {
-                    }
-                    val++;
-                    //System.out.println(value);
-                    setValue(val);
-                    if (val > 120) {
-                        val = 0;
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException ex) {
+//                    }
+//                    val++;
+//                    //System.out.println(value);
+//                    setValue(val);
+//                    if (val > 120) {
+//                        val = 0;
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     @Override
