@@ -218,7 +218,7 @@ public class AirTankWidget extends Widget {
                 g.fillRect(X / 22, X / 17, drawWidth, (int) (X / 2.8));
                 g.setColor(Color.YELLOW);
                 g.translate(X/20,0);
-                g.setFont(new Font("Ubuntu", Font.BOLD, (X / 8)));
+                g.setFont(new Font("Ubuntu", Font.BOLD, (X / 7)));
                 g.drawString(text, (X - g.getFontMetrics().stringWidth(text)) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
 
                 g.setFont(new Font("Consolas", 0, (X / 16)));
@@ -226,7 +226,7 @@ public class AirTankWidget extends Widget {
 
                 if ((prop.getValue().equals(true))) {
                     g.setFont(new Font("Consolas", 0, (X / 10)));
-                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 8))).stringWidth(text) / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
+                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 7))).stringWidth(text) / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
                 }
                 g.translate(-X/20,0);
                 g.drawImage(airtank3, -X/19, -X/19, X*12/10, (X*12/10 / 2), null);
