@@ -42,7 +42,7 @@ public class ArmPot extends Widget {
     Property smoothingfactor = new IntegerProperty(this, "Smoothing Factor",5);
     Property style = new IntegerProperty(this, "Style",2);
 
-    private BufferedImage arm, armS, circle, circleS,arm1, armS1, circle1, circleS1, arm2, armS2, circle2, circleS2;
+    private BufferedImage arm, armS, circle, circleS,arm1, armS1, circle1, circleS1, arm2, armS2, circle2, circleS2, arm3, armS3, circle3, circleS3;
 
 
     @Override
@@ -63,6 +63,10 @@ public class ArmPot extends Widget {
             armS2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c2.png"));
             circle2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot2.png"));
             circleS2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot-s2.png"));
+            arm3 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm3.png"));
+            armS3 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c3.png"));
+            circle3 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot3.png"));
+            circleS3 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot-s3.png"));
         } catch (IOException e) { }
 
         final Dimension size = new Dimension(X, X);
@@ -163,9 +167,16 @@ public class ArmPot extends Widget {
         armS = armS2;
         circle = circle2;
         circleS = circleS2;
-        imageoffset = armY/20;
+        imageoffset = armY/19;
 
-    } else {
+    } else if (((int)style.getValue())==0) {
+        arm = arm3;
+        armS = armS3;
+        circle = circle3;
+        circleS = circleS3;
+        imageoffset = armY/19;
+        
+        } else if (((int)style.getValue())==1) {
         arm = arm1;
         armS = armS1;
         circle = circle1;
