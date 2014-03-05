@@ -1,7 +1,6 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
-import edu.wpi.first.smartdashboard.properties.IntegerListProperty;
 //import edu.wpi.first.smartdashboard.gui.elements.bindings.AbstractValueWidget;
 import edu.wpi.first.smartdashboard.properties.IntegerProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
@@ -36,13 +35,15 @@ public class ArmPot extends Widget {
     private int offset;
     private int length;
     private int valueField;
+    int imageoffset;
     //private int preval[] = new int[15];
 
     Property potset = new IntegerProperty(this, "Potentiometer Offset",2427);
     Property smoothingfactor = new IntegerProperty(this, "Smoothing Factor",5);
-    //Property style = new IntegerProperty(this, "Style",2);
+    Property style = new IntegerProperty(this, "Style",2);
 
-    private BufferedImage arm, armS, circle, circleS;
+    private BufferedImage arm, armS, circle, circleS,arm1, armS1, circle1, circleS1, arm2, armS2, circle2, circleS2;
+
 
     @Override
     public void init() {
@@ -54,10 +55,14 @@ public class ArmPot extends Widget {
 //            smoothingfactor.setValue(5);
 //        }
         try {
-            arm = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm.png"));
-            armS = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c.png"));
-            circle = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot.png"));
-            circleS = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot-s.png"));
+            arm1 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm.png"));
+            armS1 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c.png"));
+            circle1 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot.png"));
+            circleS1 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot-s.png"));
+            arm2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm2.png"));
+            armS2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-c2.png"));
+            circle2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot2.png"));
+            circleS2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/arm-pivot-s2.png"));
         } catch (IOException e) { }
 
         final Dimension size = new Dimension(X, X);
@@ -68,38 +73,39 @@ public class ArmPot extends Widget {
 
         final BorderLayout layout = new BorderLayout(0, 0);
         this.setLayout(layout);
+        this.propertyChanged(style);
 
         for (int r = 0; r > length; r++) {
             preVal[r] = 2000;
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(30);
-                    } catch (InterruptedException ex) { }
-                    rawPotVal = rawPotVal + 10;
-
-                    setValue(rawPotVal);
-                    if (rawPotVal > 30001) {
-                        rawPotVal = 20001;
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    try {
+//                        Thread.sleep(30);
+//                    } catch (InterruptedException ex) { }
+//                    rawPotVal = rawPotVal + 10;
+//
+//                    setValue(rawPotVal);
+//                    if (rawPotVal > 30001) {
+//                        rawPotVal = 20001;
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     @Override
     public void propertyChanged(final Property prprt) {
-//        if (prprt == editable) {
-//            valueField.setEnabled(editable.getValue());
-//        }
-    }
 
+    }
     @Override
     public void setValue(Object o) {
+
+
+
 
         offset = (int)potset.getValue();
         length = (int)smoothingfactor.getValue();
@@ -125,7 +131,6 @@ public class ArmPot extends Widget {
                 for (int j = 0; j < length; j++) {
                     value += (preVal[j])/length;
                 }
-
 
             }
                 //value = ((preVal[0] + preVal[1] + preVal[2] + preVal[3] + preVal[4]) / 5);
@@ -153,6 +158,20 @@ public class ArmPot extends Widget {
 
     @Override
     protected void paintComponent(final Graphics gg) {
+        if (((int)style.getValue())==2){
+        arm = arm2;
+        armS = armS2;
+        circle = circle2;
+        circleS = circleS2;
+        imageoffset = armY/20;
+
+    } else {
+        arm = arm1;
+        armS = armS1;
+        circle = circle1;
+        circleS = circleS1;
+        imageoffset = 0;
+        }
         X = Math.min(getWidth(), getHeight());
 
         //Y = X;
@@ -164,20 +183,20 @@ public class ArmPot extends Widget {
         g.translate(X / 2, (X / 2));
         if (spin == 0) {
             g.rotate((deca - 90) * Math.PI / 180);
-            g.drawImage(arm, -(armY / 8), -(armY / 7), armX, armY, this);
+            g.drawImage(arm, -(armY / 8), -(armY / 7)-imageoffset, armX, armY, this);
             g.rotate(-(deca - 90) * Math.PI / 180);
             g.drawImage(circle, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
         }
         if (spin == 1) {
             g.rotate((deca - 90) * Math.PI / 180);
-            g.drawImage(armS, -(armY / 8), -(armY / 7), armX, armY, this);
+            g.drawImage(armS, -(armY / 8), -(armY / 7)-imageoffset, armX, armY, this);
             g.rotate(-(deca - 90) * Math.PI / 180);
             g.drawImage(circleS, -(int) (armY / 3.6), -(int) (armY / 3.6), (int) (armY / 1.8), (int) (armY / 1.8), this);
         }
         hyp = ((g.getFontMetrics().stringWidth(string) / 2) + 30);
         LX = (int) (Math.cos((deca - 90) * Math.PI / 180) * -armY / 1.4) + 4;
         LY = (int) (Math.sin((deca - 90) * Math.PI / 180) * -armY / 1.6) - 14;
-        g.setFont(new java.awt.Font("Ubuntu", 0, (int) (armY / 4.667)));
+        g.setFont(new java.awt.Font("Ubuntu", 0, (int) (armY / 4.867)));
         g.setColor(Color.GREEN);
         g.drawString("°", (LX + g.getFontMetrics().stringWidth(string)), LY + 5);
         g.setFont(new java.awt.Font("Ubuntu", Font.BOLD, (int) (armY / 2.333)));
