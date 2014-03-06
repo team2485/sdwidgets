@@ -50,7 +50,7 @@ public class Background extends StaticWidget implements IRemoteConnectionListene
             @Override
             public void run() {
                 // set dashboard background
-                self.getParent().setBackground(new Color(0x212121));
+                self.getParent().setBackground(new Color(0x111111));
 
                 // maximize it
                 ((JFrame)SwingUtilities.getWindowAncestor(self)).setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -60,6 +60,26 @@ public class Background extends StaticWidget implements IRemoteConnectionListene
                 self.setPreferredSize(size);
                 self.setMinimumSize(size);
                 self.setMaximumSize(size);
+
+                final float boxHeight = 120f, dipHeight = 100f, maxHeight = 200f;
+
+                shape = new Path2D.Float();
+                shape.moveTo(0f, 0f);
+                shape.lineTo(getWidth(), 0f);
+                shape.lineTo(getWidth(), boxHeight);
+                shape.curveTo(getWidth() - 300f, boxHeight + dipHeight, 300f, boxHeight + dipHeight, 0f, boxHeight);
+                shape.lineTo(0f, 0f);
+
+                bottom = new Path2D.Float();
+                bottom.moveTo(0f, boxHeight);
+                bottom.curveTo(300f, boxHeight + dipHeight, getWidth() - 300f, boxHeight + dipHeight, getWidth(), boxHeight);
+
+                redTopGrad      = new GradientPaint(0, 0, new Color(255, 0, 0, 100), 0, 60, new Color(255, 0, 0, 0));
+                redBottomGrad   = new GradientPaint(0, maxHeight, new Color(255, 0, 0, 30), 0, maxHeight - 50, new Color(255, 0, 0, 0));
+                redLineGrad     = new GradientPaint(0, 0, new Color(255, 0, 0, 0), getWidth() / 2, 0, new Color(255, 0, 0, 200), true);
+                greenTopGrad    = new GradientPaint(0, 0, new Color(0, 255, 0, 100), 0, 60, new Color(0, 255, 0, 0));
+                greenBottomGrad = new GradientPaint(0, maxHeight, new Color(0, 255, 0, 30), 0, maxHeight - 50, new Color(0, 255, 0, 0));
+                greenLineGrad   = new GradientPaint(0, 0, new Color(0, 255, 0, 0), getWidth() / 2, 0, new Color(0, 255, 0, 200), true);
 
                 renderLogoBuffer();
             }
@@ -77,9 +97,6 @@ public class Background extends StaticWidget implements IRemoteConnectionListene
         Graphics2D g = (Graphics2D)gg;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g.setColor(new Color(0x111111));
-        g.fillRect(0, 0, getWidth(), getHeight());
-
         g.drawImage(leftImage, 0, 0, null);
         g.drawImage(rightImage, getWidth() - rightImage.getWidth(), 0, null);
 
@@ -88,29 +105,9 @@ public class Background extends StaticWidget implements IRemoteConnectionListene
     }
 
     private void renderLogoBuffer() {
+        if (shape == null) return;
+
         final int maxHeight = 200;
-
-        if (shape == null) {
-            final float boxHeight = 120f, dipHeight = 100f;
-
-            shape = new Path2D.Float();
-            shape.moveTo(0f, 0f);
-            shape.lineTo(getWidth(), 0f);
-            shape.lineTo(getWidth(), boxHeight);
-            shape.curveTo(getWidth() - 300f, boxHeight + dipHeight, 300f, boxHeight + dipHeight, 0f, boxHeight);
-            shape.lineTo(0f, 0f);
-
-            bottom = new Path2D.Float();
-            bottom.moveTo(0f, boxHeight);
-            bottom.curveTo(300f, boxHeight + dipHeight, getWidth() - 300f, boxHeight + dipHeight, getWidth(), boxHeight);
-
-            redTopGrad      = new GradientPaint(0, 0, new Color(255, 0, 0, 100), 0, 60, new Color(255, 0, 0, 0));
-            redBottomGrad   = new GradientPaint(0, maxHeight, new Color(255, 0, 0, 30), 0, maxHeight - 50, new Color(255, 0, 0, 0));
-            redLineGrad     = new GradientPaint(0, 0, new Color(255, 0, 0, 0), getWidth() / 2, 0, new Color(255, 0, 0, 200), true);
-            greenTopGrad    = new GradientPaint(0, 0, new Color(0, 255, 0, 100), 0, 60, new Color(0, 255, 0, 0));
-            greenBottomGrad = new GradientPaint(0, maxHeight, new Color(0, 255, 0, 30), 0, maxHeight - 50, new Color(0, 255, 0, 0));
-            greenLineGrad   = new GradientPaint(0, 0, new Color(0, 255, 0, 0), getWidth() / 2, 0, new Color(0, 255, 0, 200), true);
-        }
 
         logoBuffer = new BufferedImage(getWidth(), maxHeight, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D lg = logoBuffer.createGraphics();
