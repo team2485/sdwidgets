@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.tables.IRemoteConnectionListener;
 import edu.wpi.first.wpilibj.tables.ITable;
 import edu.wpi.first.wpilibj.tables.ITableListener;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -25,10 +26,26 @@ public class AutoChooser extends StaticWidget implements IRemoteConnectionListen
     public static final DataType[] TYPES = { DataType.NUMBER };
     private static final String FIELD_NAME = "autoMode";
 
-    private static final String[] MODES = new String[] {
-        // reflects robot code as of commit 6c561580 "</build>. Three cheers for Odin!"
-        "Forward", "Forward Truss", "Forward Custom", "One Ball Left", "One Ball Right", "One Ball Truss Left", "One Ball Truss Right", "One Ball From Left To Center Truss", "One Ball From Right To Center Truss", "One Ball Angled Shot Left", "One Ball Angled Shot Right", "One Ball Custom Left", "Two Ball", "Three Ball"
-    };
+    private static final String[] MODES = new String[16];
+    private static final int[] CODES = new int[16];
+    static {
+        MODES[0]  = "None";                                CODES[0] = -1;
+        MODES[1]  = "Forward";                             CODES[1] = 0;
+        MODES[2]  = "Forward Truss";                       CODES[2] = 1;
+        MODES[3]  = "Forward Custom";                      CODES[3] = 2;
+        MODES[4]  = "One Ball Left";                       CODES[4] = 3;
+        MODES[5]  = "One Ball Right";                      CODES[5] = 4;
+        MODES[6]  = "One Ball Truss Left";                 CODES[6] = 5;
+        MODES[7]  = "One Ball Truss Right";                CODES[7] = 6;
+        MODES[8]  = "One Ball From Left To Center Truss";  CODES[8] = 7;
+        MODES[9]  = "One Ball From Right To Center Truss"; CODES[9] = 8;
+        MODES[10] = "One Ball Angled Shot Left";          CODES[10] = 9;
+        MODES[11] = "One Ball Angled Shot Right";         CODES[11] = 10;
+        MODES[12] = "One Ball Custom Left";               CODES[12] = 11;
+        MODES[13] = "Two Ball Hot";                       CODES[13] = 12;
+        MODES[14] = "Three Ball";                         CODES[14] = 13;
+        MODES[15] = "Three Ball No Hot";                  CODES[15] = 14;
+    }
     private int selectedIndex = 0;
 
     private final JPopupMenu popup;
@@ -47,7 +64,7 @@ public class AutoChooser extends StaticWidget implements IRemoteConnectionListen
             popup.add(new JMenuItem(new AbstractAction(MODES[i]) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    setIndex(index);
+                    setIndex(CODES[index]);
                 }
             }));
         }
@@ -69,7 +86,7 @@ public class AutoChooser extends StaticWidget implements IRemoteConnectionListen
     }
 
     private void setIndex(int index) {
-        auto.setText(MODES[index]);
+        auto.setText(MODES[Arrays.binarySearch(CODES, index)]);
         selectedIndex = index;
     }
 
