@@ -30,6 +30,8 @@ public class AirTankWidget extends Widget {
     private double stylemulti1;
     private double stylemulti2;
     private String text;
+    private Font font;
+    private Font fonts;
     private final Property prop    = new BooleanProperty(this, "Smoothing", true);
     private final Property propval = new DoubleProperty(this, "Smoothing Mulltipyler (0.0 - 0.9)", .8);
     private final Property style   = new IntegerProperty(this, "Style (0 - 2)", 2);
@@ -145,9 +147,11 @@ public class AirTankWidget extends Widget {
         color = (new java.awt.Color(((int) R), ((int) G), ((int) B)));
         final Graphics2D g = (Graphics2D) gg;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (value >= 000) {
+        if (value >= 000) {         
 
             if (style.getValue().equals(0)) {
+                font = new Font("Ubuntu", Font.PLAIN, (X / 11));
+                fonts = new Font ("Consolas", 0, (X / 16));
 
                 if (drawWidth > MAX_DRAW_WIDTH) {
                     drawWidth = MAX_DRAW_WIDTH;
@@ -164,7 +168,7 @@ public class AirTankWidget extends Widget {
                 g.fillRoundRect(X / 10, (int) stylemulti1, drawWidth, (int) stylemulti2, X / 15, X / 15);
 
                 g.setColor(Color.WHITE);
-                g.setFont(new Font("Ubuntu", Font.PLAIN, X / 11));
+                g.setFont(font);
                 g.drawString(text + " PSI", (X - g.getFontMetrics().stringWidth(text + "PSI")) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
 
                 if ((prop.getValue().equals(true))) {
@@ -174,6 +178,8 @@ public class AirTankWidget extends Widget {
                 g.drawImage(airtank2, 0, 0, (X), (X / 2), this);
 
             } else if (style.getValue().equals(1)) {
+                font = new Font("Ubuntu", Font.BOLD, (X / 8));
+                fonts = new Font ("Consolas", 0, (X / 16));
                 MAX_DRAW_WIDTH = (int) (X * .92);
                 drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
 
@@ -185,48 +191,54 @@ public class AirTankWidget extends Widget {
                 }
 
                 g.setColor(color);
-                g.fillRoundRect(X / 23, X / 13, drawWidth, (int) (X / 2.7), 8, 8);
+                g.fillRoundRect(X / 23, X / 15, drawWidth, (int) (X / 2.7), 8, 8);
 
                 g.setColor(Color.GREEN);
-                g.setFont(new Font("Ubuntu", Font.BOLD, (X / 8)));
+                g.setFont(font);
+
+                    
+                    
+                
                 g.drawString(text, (X - g.getFontMetrics().stringWidth(text)) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
 
-                g.setFont(new Font("Consolas", 0, (X / 16)));
-                g.drawString("PSI", (int) (X + (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 8))).stringWidth(text))) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
+                g.setFont(fonts);
+                g.drawString("PSI", (int) (X + (g.getFontMetrics(font).stringWidth(text))) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
 
                 if ((prop.getValue().equals(true))) {
                     g.setFont(new Font("Consolas", 0, (X / 10)));
-                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 8))).stringWidth(text) / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
+                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(font).stringWidth(text) / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
                 }
 
                 g.drawImage(airtank, 0, 0, (X), (X / 2), this);
 
             } else {
+                font = new Font("BOOMBOX", Font.BOLD, (X / 10));
+                fonts = new Font ("Consolas", 0, (X / 10));
                 X = X*8/10;
                 g.translate(X/16,X/16);
                 MAX_DRAW_WIDTH = (int) (X);
                 drawWidth = (int) ((value - MIN_VAL) / (MAX_VAL - MIN_VAL) * MAX_DRAW_WIDTH);
 
                 g.setColor(new java.awt.Color(100, 100, 100, 100));
-                g.fillRoundRect((X / 22), (X / 17), MAX_DRAW_WIDTH, (int) (X / 2.8), 8, 8);
+                g.fillRoundRect((X / 22), (X / 18), MAX_DRAW_WIDTH, (int) (X / 2.8), 8, 8);
 
                 if (drawWidth > MAX_DRAW_WIDTH) {
                     drawWidth = MAX_DRAW_WIDTH;
                 }
 
                 g.setColor(color);
-                g.fillRect(X / 22, X / 17, drawWidth, (int) (X / 2.8));
+                g.fillRect(X / 22, X / 18, drawWidth, (int) (X / 2.8));
                 g.setColor(Color.YELLOW);
                 g.translate(X/20,0);
-                g.setFont(new Font("Ubuntu", Font.BOLD, (X / 7)));
-                g.drawString(text, (X - g.getFontMetrics().stringWidth(text)) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
-
-                g.setFont(new Font("Consolas", 0, (X / 16)));
-                g.drawString("PSI", (int) (X + (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 8))).stringWidth(text))) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
+                g.setFont(font);
+                g.drawString(text,(X - g.getFontMetrics().stringWidth(text)) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
+                g.setFont(new Font("BOOMBOX",Font.BOLD,X/15));
+                g.setColor(Color.GREEN);
+                g.drawString("PSI", (int) (X + (g.getFontMetrics(font).stringWidth(text))) / 2, (int) (X / 1.97) + g.getFontMetrics().getHeight() / 2);
 
                 if ((prop.getValue().equals(true))) {
-                    g.setFont(new Font("Consolas", 0, (X / 10)));
-                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(new Font("Ubuntu", Font.BOLD, (X / 7))).stringWidth(text) / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
+                    g.setFont(fonts);
+                    g.drawString("~", (int) (X / 2 - (g.getFontMetrics().stringWidth("~"))) - (g.getFontMetrics(font).stringWidth(text) / 2), (int) (X / 1.97) + g.getFontMetrics().getHeight() / 4);
                 }
                 g.translate(-X/20,0);
                 g.drawImage(airtank3, -X/19, -X/19, X*12/10, (X*12/10 / 2), null);
