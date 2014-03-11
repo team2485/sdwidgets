@@ -1,6 +1,8 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
+import edu.wpi.first.smartdashboard.properties.IntegerListProperty;
+import edu.wpi.first.smartdashboard.properties.MultiProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,6 +14,8 @@ public class Bot extends StaticWidget {
 
     private BufferedImage image;
     private int X;
+    public int [] styles = new int [] {0,1,2};
+    Property style = new IntegerListProperty(this, "Style", styles);
 
 
     @Override
