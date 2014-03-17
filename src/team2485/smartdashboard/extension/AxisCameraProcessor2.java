@@ -529,7 +529,7 @@ public class AxisCameraProcessor2 extends StaticWidget {
             hsv = opencv_core.IplImage.create(size, 8, 3);
             dilated = opencv_core.IplImage.create(size, 8, 1);
             dilationElement = opencv_imgproc.cvCreateStructuringElementEx(
-                    2, 2, 0, 0,
+                    8, 8, 0, 0,
                     opencv_imgproc.CV_SHAPE_ELLIPSE, null);
         }
         min = cvScalar(hueMin, satMin, vibMin, 0);
@@ -547,11 +547,7 @@ public class AxisCameraProcessor2 extends StaticWidget {
         // Find the green areas
         opencv_core.cvInRangeS(hsv, min, max, thresh);
 
-        // Smooth out the areas - don't use this if detecting corner points
-        // opencv_imgproc.cvSmooth(thresh, thresh, opencv_imgproc.CV_MEDIAN, 13);
-
         // Expand the edges for accuracy
-        // TODO: test expanding to ease out noise
         opencv_imgproc.cvDilate(thresh, dilated, dilationElement, 2);
 
         if (showBinaryImage && binaryPreview != null)
@@ -561,62 +557,25 @@ public class AxisCameraProcessor2 extends StaticWidget {
         WPIBinaryImage binWpi = WPIExtensions.makeWPIBinaryImage(dilated);
         contours = WPIExtensions.findConvexContours(binWpi);
 
-        WPIContour lhContour = null, lvContour = null, rhContour = null, rvContour = null;
-        double lhArea = 0, lvArea = 0, rhArea = 0, rvArea = 0;
+        boolean foundLeft = false, foundRight = false;
 
         for (WPIContour c : contours) {
             double area = opencv_imgproc.cvContourArea(c.getCVSeq(), opencv_core.CV_WHOLE_SEQ, 0);
-            if (area < 20) continue; // eliminate noise
+
+            if (area < 200 || c.getWidth() < dilated.width() / 4) continue;
 
             final int rectCenterX = c.getX() + c.getWidth() / 2;
 
-            // left side
-            if (rectCenterX < thresh.width() / 2) {
-                // left horizontal
-                if (c.getWidth() > 2.0 * c.getHeight() && area > lhArea) {
-                    lhContour = c;
-                    lhArea = area;
-                }
-                // left vertical
-                else if (c.getHeight() > 2.0 * c.getWidth() && area > lvArea) {
-                    lvContour = c;
-                    lvArea = area;
-                }
-            }
-            // right side
-            else {
-                // right horizontal
-                if (c.getWidth() > 2.0 * c.getHeight() && area > rhArea) {
-                    rhContour = c;
-                    rhArea = area;
-                }
-                // right vertical
-                else if (c.getHeight() > 2.0 * c.getWidth() && area > rvArea) {
-                    rvContour = c;
-                    rvArea = area;
-                }
-            }
+            if (rectCenterX < dilated.width() / 2)
+                foundLeft = true;
+            else
+                foundRight = true;
         }
 
-        // Which retroreflective flags are up?
-        if (lhContour != null && rhContour != null) trackingState = TrackState.BOTH;
-        else if (lhContour != null && rhContour == null) {
-            trackingState = TrackState.LEFT;
-        }
-        else if (lhContour == null && rhContour != null) {
-            trackingState = TrackState.RIGHT;
-        }
+        if (foundLeft && foundRight) trackingState = TrackState.BOTH;
+        else if (foundLeft) trackingState = TrackState.LEFT;
+        else if (foundRight) trackingState = TrackState.RIGHT;
         else trackingState = TrackState.NONE;
-
-        // Use the biggest area for distance calc
-        double theArea;
-        if (lhArea > rhArea) theArea = lhArea;
-        else theArea = rhArea;
-
-        // Calc the distance
-        distance = 70587 * Math.pow(theArea, -2.143);
-        // TODO: base this on the camera x offset for better distance calculation?
-        // TODO: maybe switch to other distancing mode after ~18-20 feet, such as distance between targets
 
         WPIExtensions.releaseMemory();
 
