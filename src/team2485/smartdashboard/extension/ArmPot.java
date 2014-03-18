@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
 public class ArmPot extends Widget {
 
     public static final String NAME = "ArmPot";
-    public static final DataType[] TYPES = {DataType.NUMBER};
+    public static final DataType[] TYPES = {DataType.STRING};
     public static int X = 344;
     //public static int Y = 344;
     public int LX;
@@ -94,7 +94,7 @@ public class ArmPot extends Widget {
                     if ((boolean) Test.getValue()) {
                         rawVal = rawVal + 30;
 
-                        setValue(2000 + "," + rawVal);
+                        setValue(16000 + "," + rawVal);
                         if (rawVal > 30001) {
                             rawVal = 15001;
                         }
@@ -112,7 +112,7 @@ public class ArmPot extends Widget {
     @Override
     public void setValue(Object o) {
         final String[] vals = ((String) o).split(",");
-        offset = (int) Double.parseDouble(vals[0]) + 48;
+        offset = (int) (Double.parseDouble(vals[0]) + 48)*10;
         rawVal = (int) Double.parseDouble(vals[1]);
         length = (int) smoothingfactor.getValue();
         if (length > preVal.length) {
