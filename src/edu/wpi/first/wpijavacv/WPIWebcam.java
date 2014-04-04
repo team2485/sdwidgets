@@ -1,27 +1,27 @@
 package edu.wpi.first.wpijavacv;
 
-import com.googlecode.javacv.FFmpegFrameGrabber;
+import com.googlecode.javacv.OpenCVFrameGrabber;
 import static com.googlecode.javacv.cpp.opencv_core.*;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
- * A class used to gather images from the robot's camera.
+ * A class used to gather images from the driver station camera.
  * @author Joe Grinstead and Greg Granito
  */
-public class WPIFFmpegVideo extends WPIDisposable {
+public class WPIWebcam extends WPIDisposable {
 
-    private FFmpegFrameGrabber grabber;
+    private OpenCVFrameGrabber grabber;
     private IplImage image;
     private boolean readImage = true;
     private boolean badConnection = false;
     private final Object imageLock = new Object();
     private final Object grabberLock = new Object();
 
-    public WPIFFmpegVideo(final String path) {
+    public WPIWebcam() {
         final Thread thread = new Thread() {
             @Override
             public void run() {
-                grabber = new FFmpegFrameGrabber(path);
+                grabber = new OpenCVFrameGrabber("");
 				grabber.setFrameRate(1.0);
                 try {
                     grabber.start();

@@ -1,10 +1,10 @@
 package team2485.smartdashboard.extension.util;
 
 /**
- * Stores an Axis Camera HSV min/max configuration.
+ * Stores an HSV min/max configuration.
  * @author Bryce Matsumori
  */
-public class AxisCameraConfig {
+public class HSVConfig {
     public int
             hMin = 0, hMax = 180,
             sMin = 0, sMax = 255,
@@ -13,7 +13,7 @@ public class AxisCameraConfig {
     /**
      * Creates a new Axis camera configuration with the default values.
      */
-    public AxisCameraConfig() {
+    public HSVConfig() {
     }
 
     /**
@@ -25,7 +25,7 @@ public class AxisCameraConfig {
      * @param vMin vib min
      * @param vMax vib max
      */
-    public AxisCameraConfig(int hMin, int hMax, int sMin, int sMax, int vMin, int vMax) {
+    public HSVConfig(int hMin, int hMax, int sMin, int sMax, int vMin, int vMax) {
         this.hMin = hMin;
         this.hMax = hMax;
         this.sMin = sMin;
@@ -48,10 +48,10 @@ public class AxisCameraConfig {
      * @param s The String to parse.
      * @return The config.
      */
-    public static AxisCameraConfig parse(String s) {
+    public static HSVConfig parse(String s) {
         String[] split = s.split(",");
         if (split.length != 6) return null;
-        AxisCameraConfig config = new AxisCameraConfig();
+        HSVConfig config = new HSVConfig();
         try {
             config.hMin = Integer.parseInt(split[0]);
             config.hMax = Integer.parseInt(split[1]);
@@ -81,7 +81,7 @@ public class AxisCameraConfig {
     @Override
     public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) return false;
-        final AxisCameraConfig other = (AxisCameraConfig) obj;
+        final HSVConfig other = (HSVConfig) obj;
 
         return this.hMin == other.hMin && this.hMax == other.hMax &&
                this.sMin == other.sMin && this.sMax == other.sMax &&
