@@ -13,6 +13,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -61,7 +62,7 @@ public class WebcamHandProcessor extends StaticWidget {
     private opencv_imgproc.IplConvKernel dilationElement;
 
     // UI
-    private final JCheckBoxMenuItem binaryImageMenuItem = new JCheckBoxMenuItem("Show Binary Image", false), hsvTunerMenuItem = new JCheckBoxMenuItem("Show HSV Tuner", false);
+    private final JCheckBoxMenuItem binaryImageMenuItem = new JCheckBoxMenuItem("Show Binary Image", false), hsvTunerMenuItem = new JCheckBoxMenuItem("Show HSV Tuner", false), recordMenuItem = new JCheckBoxMenuItem("Record", false);
     private final JMenu configMenu = new JMenu("Config");
     private final JMenuItem configSaveItem = new JMenuItem("Save Current");
 
@@ -82,13 +83,20 @@ public class WebcamHandProcessor extends StaticWidget {
     private BufferedImage noneImage, leftImage, rightImage, bothImage, placeholderImage;
     private String errorMessage = "Connecting to webcam...";
     private JFrame dashboardFrame;
+    private boolean recording = false;
+
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd HH-mm-ss");
+    private long lastUpdateTime = 0;
 
     // Configurations
     private static final File
             SD_HOME            = new File(new File(System.getProperty("user.home")), "SmartDashboard"),
-            WEBCAM_CONFIG_FILE = new File(SD_HOME, "webcamconfig.properties");
+            WEBCAM_CONFIG_FILE = new File(SD_HOME, "webcamconfig.properties"),
+            SNAP_HOME = new File(SD_HOME, "Webcam"),
+            REC_LOCK = new File(SNAP_HOME, "recording");
     private final Properties props = new Properties();
     private final HashMap<String, HSVConfig> configs = new HashMap<>();
+    private static final long SNAP_TIME = 2000;
 
     private class GCThread extends Thread {
         boolean destroyed = false;
@@ -141,6 +149,19 @@ public class WebcamHandProcessor extends StaticWidget {
                         table.putNumber("targets", trackingState.id);
                     }
                     else drawnImage = image.getBufferedImage();
+
+                    if (recording) {
+                        long time = System.currentTimeMillis();
+                        if (time - lastUpdateTime > SNAP_TIME) {
+                            try {
+                                ImageIO.write(drawnImage, "jpg", new File(SNAP_HOME, format.format(new Date()) + ".jpg"));
+                            } catch (IOException ex) {
+                                System.err.println("Could not save image.");
+                                ex.printStackTrace();
+                            }
+                            lastUpdateTime = time;
+                        }
+                    }
 
                     image.dispose();
 
@@ -218,6 +239,12 @@ public class WebcamHandProcessor extends StaticWidget {
             }
         });
 
+        SNAP_HOME.mkdir();
+        if (REC_LOCK.exists()) {
+            recording = true;
+            recordMenuItem.setSelected(true);
+        }
+
         try {
             noneImage  = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-none.png"));
             leftImage  = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-left.png"));
@@ -275,8 +302,15 @@ public class WebcamHandProcessor extends StaticWidget {
                 hsvTunerProperty.setValue(showHsvTuner);
             }
         });
+        recordMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toggleRecording();
+            }
+        });
         debugMenu.add(binaryImageMenuItem);
         debugMenu.add(hsvTunerMenuItem);
+        debugMenu.add(recordMenuItem);
 
         configSaveItem.addActionListener(new ActionListener() {
             @Override
@@ -415,6 +449,11 @@ public class WebcamHandProcessor extends StaticWidget {
                     case RIGHT: hotImg = rightImage; break;
                 }
                 g.drawImage(hotImg, getWidth() / 2 - noneImage.getWidth() / 2, 0, null);
+            }
+
+            if (recording) {
+                g.setColor(Color.red);
+                g.fillOval(10, imageY + scaledImageHeight - 20, 10, 10);
             }
         }
         else {
@@ -623,5 +662,19 @@ public class WebcamHandProcessor extends StaticWidget {
         }
 
         hsvTunerMenuItem.setSelected(showHsvTuner);
+    }
+
+    private void toggleRecording() {
+        recording = !recording;
+
+        if (recording) {
+            try {
+                REC_LOCK.createNewFile();
+            } catch (IOException e) {
+            }
+        }
+        else {
+            REC_LOCK.delete();
+        }
     }
 }
