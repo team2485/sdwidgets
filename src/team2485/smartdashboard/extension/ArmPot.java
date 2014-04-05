@@ -94,7 +94,7 @@ public class ArmPot extends Widget {
                     if ((boolean) Test.getValue()) {
                         rawVal = rawVal + 30;
 
-                        setValue(16000 + "," + rawVal);
+                        setValue(1600 + "," + rawVal);
                         if (rawVal > 30001) {
                             rawVal = 15001;
                         }
@@ -112,7 +112,7 @@ public class ArmPot extends Widget {
     @Override
     public void setValue(Object o) {
         final String[] vals = ((String) o).split(",");
-        offset = (int) (Double.parseDouble(vals[0]) + 48)*10;
+        offset = (int) (Double.parseDouble(vals[0]) + 48);
         rawVal = (int) Double.parseDouble(vals[1]);
         length = (int) smoothingfactor.getValue();
         if (length > preVal.length) {
