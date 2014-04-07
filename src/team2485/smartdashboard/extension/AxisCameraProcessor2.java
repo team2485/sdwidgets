@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.*;
 import java.util.*;
 import javax.imageio.ImageIO;
@@ -23,13 +22,18 @@ import team2485.smartdashboard.extension.util.*;
  * Axis Camera Image Processing Widget
  * @author Bryce Matsumori, jrussell (Team 341: Miss Daisy)
  */
-
-/*
- * TODO: LIST
- * check three frames in a row - verify same side for hot target
- */
 public class AxisCameraProcessor2 extends StaticWidget {
     public static final String NAME = "Axis Camera Processor";
+
+    private enum TrackState {
+        NONE(0), LEFT(1), RIGHT(2), BOTH(3);
+
+        public final int id;
+        TrackState(int id) {
+            this.id = id;
+        }
+    }
+    public enum ExposureMode { VISION, DRIVER }
 
     // State
     private boolean connected = false, process = true, showBinaryImage = false, showHsvTuner = false, holdExposure = true;
@@ -37,6 +41,7 @@ public class AxisCameraProcessor2 extends StaticWidget {
             hueMin = 39,  hueMax = 108,
             satMin = 111, satMax = 255,
             vibMin = 98,  vibMax = 255;
+    private TrackState trackingState = TrackState.NONE;
 
     // SmartDashboard Properties
     public final IPAddressProperty ipProperty = new IPAddressProperty(this, "Camera IP Address",
@@ -60,7 +65,6 @@ public class AxisCameraProcessor2 extends StaticWidget {
     // Image Processing
     private WPICamera cam;
     private BufferedImage drawnImage;
-    private double distance = 0;
     private opencv_core.CvSize size = null;
     private WPIContour[] contours;
     private opencv_core.IplImage thresh, hsv, dilated;
@@ -72,26 +76,12 @@ public class AxisCameraProcessor2 extends StaticWidget {
     private final JCheckBoxMenuItem binaryImageMenuItem = new JCheckBoxMenuItem("Show Binary Image", false), hsvTunerMenuItem = new JCheckBoxMenuItem("Show HSV Tuner", false);
     private final JMenu configMenu = new JMenu("Config");
     private final JMenuItem configSaveItem = new JMenuItem("Save Current");
-
-    private enum TrackState {
-        NONE(0), LEFT(1), RIGHT(2), BOTH(3);
-
-        public final int id;
-        TrackState(int id) {
-            this.id = id;
-        }
-    }
-    private TrackState trackingState = TrackState.NONE;
-
-    public enum ExposureMode { VISION, DRIVER }
-
     private CanvasFrame binaryPreview;
     private HSVTuner hsvTuner;
     private BufferedImage noneImage, leftImage, rightImage, bothImage, placeholderImage;
     private String errorMessage = "Connecting...";
-    private JFrame dashboardFrame;
 
-    // Configurations
+    // Configuration
     private static final File
             SD_HOME          = new File(new File(System.getProperty("user.home")), "SmartDashboard"),
             AXIS_CONFIG_FILE = new File(SD_HOME, "axisconfig.properties");
@@ -145,7 +135,6 @@ public class AxisCameraProcessor2 extends StaticWidget {
                     if (process) {
                         drawnImage = processImage((WPIColorImage) image).getBufferedImage();
                         table.putNumber("targets", trackingState.id);
-                        table.putNumber("distance", distance);
                     }
                     else drawnImage = image.getBufferedImage();
 
@@ -208,24 +197,6 @@ public class AxisCameraProcessor2 extends StaticWidget {
         vibMin = vMinProp.getValue();
         vibMax = vMaxProp.getValue();
 
-        // hack to make propety editor modeless (not an annoying modal window)
-        final AxisCameraProcessor2 self = this;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                dashboardFrame = (JFrame)SwingUtilities.getWindowAncestor(self);
-                try {
-                    Field propEditorField = dashboardFrame.getClass().getDeclaredField("propEditor");
-                    propEditorField.setAccessible(true);
-                    JDialog propEditor = (JDialog)propEditorField.get(dashboardFrame);
-                    propEditor.setModalityType(Dialog.ModalityType.MODELESS);
-                    propEditor.revalidate();
-                } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         try {
             noneImage  = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-none.png"));
             leftImage  = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-left.png"));
@@ -242,6 +213,7 @@ public class AxisCameraProcessor2 extends StaticWidget {
 
         // <editor-fold defaultstate="collapsed" desc="Setup Menu Bar">
 
+        final AxisCameraProcessor2 self = this;
         final JMenuBar bar = new JMenuBar();
         bar.setVisible(false);
         this.addMouseListener(new MouseAdapter() {
@@ -475,16 +447,6 @@ public class AxisCameraProcessor2 extends StaticWidget {
             g.drawLine(centerX - 111, imageY, centerX - 111, imageY + scaledImageHeight);
 
             if (process) {
-                // Draw distance
-                // g.setColor(new Color(0, 0, 0, 127));
-                // g.fillRect(0, height - 36, width, 36);
-                // g.setColor(Color.white);
-                // g.setFont(new Font("Ubuntu", Font.BOLD, 22));
-
-                // final String intStr = Integer.toString((int)distance);
-                // g.drawString(intStr, width / 2 - 3 - g.getFontMetrics().stringWidth(intStr), height - 10);
-                // g.drawString(Integer.toString((int)((distance % 1) * 10)), width / 2 + 3, height - 10);
-
                 // Draw hot image
                 BufferedImage hotImg = null;
                 switch (trackingState) {

@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.imageio.ImageIO;
@@ -21,15 +20,21 @@ import team2485.smartdashboard.extension.util.*;
 
 /**
  * Webcam Image Processing Widget
- * @author Bryce Matsumori, jrussell (Team 341: Miss Daisy)
+ * @author Bryce Matsumori
  */
+public class WebcamCardTracker extends StaticWidget {
+    public static final String NAME = "Webcam Card Tracker";
 
-/*
- * TODO: LIST
- * check three frames in a row - verify same side for hot target
- */
-public class WebcamHandProcessor extends StaticWidget {
-    public static final String NAME = "Webcam Processor";
+    private static final long SNAP_TIME = 2000;
+
+    private enum TrackState {
+        NONE(0), LEFT(1), RIGHT(2);
+
+        public final int id;
+        TrackState(int id) {
+            this.id = id;
+        }
+    }
 
     // State
     private boolean connected = false, process = true, showBinaryImage = false, showHsvTuner = false;
@@ -37,6 +42,7 @@ public class WebcamHandProcessor extends StaticWidget {
             hueMin = 39,  hueMax = 108,
             satMin = 111, satMax = 255,
             vibMin = 98,  vibMax = 255;
+    private TrackState trackingState = TrackState.NONE;
 
     // SmartDashboard Properties
     public final BooleanProperty processProperty = new BooleanProperty(this, "Process Images", process),
@@ -65,30 +71,16 @@ public class WebcamHandProcessor extends StaticWidget {
     private final JCheckBoxMenuItem binaryImageMenuItem = new JCheckBoxMenuItem("Show Binary Image", false), hsvTunerMenuItem = new JCheckBoxMenuItem("Show HSV Tuner", false), recordMenuItem = new JCheckBoxMenuItem("Record", false);
     private final JMenu configMenu = new JMenu("Config");
     private final JMenuItem configSaveItem = new JMenuItem("Save Current");
-
-    private enum TrackState {
-        NONE(0), LEFT(1), RIGHT(2);
-
-        public final int id;
-        TrackState(int id) {
-            this.id = id;
-        }
-    }
-    private TrackState trackingState = TrackState.NONE;
-
-    public enum ExposureMode { VISION, DRIVER }
-
     private CanvasFrame binaryPreview;
     private HSVTuner hsvTuner;
-    private BufferedImage noneImage, leftImage, rightImage, bothImage, placeholderImage;
+    private BufferedImage noneImage, leftImage, rightImage, placeholderImage;
     private String errorMessage = "Connecting to webcam...";
-    private JFrame dashboardFrame;
-    private boolean recording = false;
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd HH-mm-ss");
     private long lastUpdateTime = 0;
+    private boolean recording = false;
 
-    // Configurations
+    // Configuration
     private static final File
             SD_HOME            = new File(new File(System.getProperty("user.home")), "SmartDashboard"),
             WEBCAM_CONFIG_FILE = new File(SD_HOME, "webcamconfig.properties"),
@@ -96,7 +88,6 @@ public class WebcamHandProcessor extends StaticWidget {
             REC_LOCK = new File(SNAP_HOME, "recording");
     private final Properties props = new Properties();
     private final HashMap<String, HSVConfig> configs = new HashMap<>();
-    private static final long SNAP_TIME = 2000;
 
     private class GCThread extends Thread {
         boolean destroyed = false;
@@ -190,7 +181,7 @@ public class WebcamHandProcessor extends StaticWidget {
     }
     private final BGThread bgThread = new BGThread();
 
-    public WebcamHandProcessor() {
+    public WebcamCardTracker() {
         WPIExtensions.init();
 
         // Try loading the HSV configurations
@@ -221,24 +212,6 @@ public class WebcamHandProcessor extends StaticWidget {
         vibMin = vMinProp.getValue();
         vibMax = vMaxProp.getValue();
 
-        // hack to make propety editor modeless (not an annoying modal window)
-        final WebcamHandProcessor self = this;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                dashboardFrame = (JFrame)SwingUtilities.getWindowAncestor(self);
-                try {
-                    Field propEditorField = dashboardFrame.getClass().getDeclaredField("propEditor");
-                    propEditorField.setAccessible(true);
-                    JDialog propEditor = (JDialog)propEditorField.get(dashboardFrame);
-                    propEditor.setModalityType(Dialog.ModalityType.MODELESS);
-                    propEditor.revalidate();
-                } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         SNAP_HOME.mkdir();
         if (REC_LOCK.exists()) {
             recording = true;
@@ -249,7 +222,6 @@ public class WebcamHandProcessor extends StaticWidget {
             noneImage  = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-none.png"));
             leftImage  = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-left.png"));
             rightImage = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-right.png"));
-            bothImage  = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/hot-both.png"));
             placeholderImage = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/axis.png"));
         } catch (IOException e) { }
 
@@ -261,6 +233,7 @@ public class WebcamHandProcessor extends StaticWidget {
 
         // <editor-fold defaultstate="collapsed" desc="Setup Menu Bar">
 
+        final WebcamCardTracker self = this;
         final JMenuBar bar = new JMenuBar();
         bar.setVisible(false);
         this.addMouseListener(new MouseAdapter() {
@@ -315,10 +288,10 @@ public class WebcamHandProcessor extends StaticWidget {
         configSaveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = JOptionPane.showInputDialog(null, "Enter configuration name.", "Axis Camera Processor", JOptionPane.PLAIN_MESSAGE);
+                String name = JOptionPane.showInputDialog(null, "Enter configuration name.", "Webcam Processor", JOptionPane.PLAIN_MESSAGE);
                 if (name == null) return;
                 if (name.indexOf('=') != -1) {
-                    JOptionPane.showMessageDialog(null, "Name cannot contain \"=\"!", "Axis Camera Processor", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Name cannot contain \"=\"!", "Webcam Processor", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -431,16 +404,6 @@ public class WebcamHandProcessor extends StaticWidget {
             g.drawLine(centerX - 111, imageY, centerX - 111, imageY + scaledImageHeight);
 
             if (process) {
-                // Draw distance
-                // g.setColor(new Color(0, 0, 0, 127));
-                // g.fillRect(0, height - 36, width, 36);
-                // g.setColor(Color.white);
-                // g.setFont(new Font("Ubuntu", Font.BOLD, 22));
-
-                // final String intStr = Integer.toString((int)distance);
-                // g.drawString(intStr, width / 2 - 3 - g.getFontMetrics().stringWidth(intStr), height - 10);
-                // g.drawString(Integer.toString((int)((distance % 1) * 10)), width / 2 + 3, height - 10);
-
                 // Draw hot image
                 BufferedImage hotImg = null;
                 switch (trackingState) {
@@ -449,11 +412,6 @@ public class WebcamHandProcessor extends StaticWidget {
                     case RIGHT: hotImg = rightImage; break;
                 }
                 g.drawImage(hotImg, getWidth() / 2 - noneImage.getWidth() / 2, 0, null);
-            }
-
-            if (recording) {
-                g.setColor(Color.red);
-                g.fillOval(10, imageY + scaledImageHeight - 20, 10, 10);
             }
         }
         else {
@@ -504,11 +462,6 @@ public class WebcamHandProcessor extends StaticWidget {
 
         // Get the raw IplImage
         opencv_core.IplImage input = rawImage.getIplImage();
-
-//        opencv_core.cvFlip(input, input, 1); // y axis
-
-        // Set ROI
-        // opencv_core.cvSetImageROI(input, opencv_core.cvRect(0, 0, size.width(), size.height()));
 
         // Convert to HSV color space
         opencv_imgproc.cvCvtColor(input, hsv, opencv_imgproc.CV_RGB2HSV);
@@ -584,7 +537,7 @@ public class WebcamHandProcessor extends StaticWidget {
                         vMaxProp.setValue(config.vMax);
                         JOptionPane.showMessageDialog(null,
                                 String.format("%s\nH: %d - %d\nS: %d - %d\nV: %d - %d", next.getKey(), config.hMin, config.hMax, config.sMin, config.sMax, config.vMin, config.vMax),
-                                "Axis Camera Processor", JOptionPane.INFORMATION_MESSAGE);
+                                "Webcam Processor", JOptionPane.INFORMATION_MESSAGE);
                     }
                 });
                 configMenu.add(configItem);
@@ -596,9 +549,9 @@ public class WebcamHandProcessor extends StaticWidget {
     private void saveProperties() {
         try {
             WEBCAM_CONFIG_FILE.createNewFile();
-            props.store(new FileOutputStream(WEBCAM_CONFIG_FILE), "Axis Camera Config");
+            props.store(new FileOutputStream(WEBCAM_CONFIG_FILE), "Webcam Config");
         } catch (IOException ex) {
-            System.err.println("Error saving Axis config file.");
+            System.err.println("Error saving webcam config file.");
             ex.printStackTrace();
         }
     }
@@ -671,6 +624,8 @@ public class WebcamHandProcessor extends StaticWidget {
             try {
                 REC_LOCK.createNewFile();
             } catch (IOException e) {
+                System.err.println("Could not create recording lock.");
+                e.printStackTrace();
             }
         }
         else {
