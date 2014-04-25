@@ -59,6 +59,9 @@ public class AutoChooser extends StaticWidget implements IRemoteConnectionListen
             }));
         }
 
+    	// set the default to two ball hot
+        setIndex(CODES[4]);
+
         buttonPressedIcon = new ImageIcon(getClass().getResource("/team2485/smartdashboard/extension/res/arrow-hover.png"));
     }
 
