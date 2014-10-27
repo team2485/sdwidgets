@@ -11,7 +11,9 @@
 		<location x="242" y="498"/>
 	</widget>
 	<widget field="Value1" type="Number" class="team2485.smartdashboard.extension.AirTankWidget">
-		<location x="226" y="650"/>
+		<location x="217" y="649"/>
+		<width>241</width>
+		<height>146</height>
 		<property name="Test" value="true"/>
 	</widget>
 	<widget field="Value5" type="Number" class="team2485.smartdashboard.extension.AirTankWidget">
@@ -26,10 +28,14 @@
 		<property name="Test" value="true"/>
 	</widget>
 	<widget field="Value3" type="Number" class="team2485.smartdashboard.extension.BatteryWidget">
-		<location x="817" y="370"/>
+		<location x="468" y="659"/>
+		<width>232</width>
+		<height>138</height>
+		<property name="Style (0 - 2)" value="1"/>
+		<property name="Test" value="true"/>
 	</widget>
 	<static-widget class="team2485.smartdashboard.extension.Background">
-		<location x="-1" y="0"/>
+		<location x="-5" y="-2"/>
 	</static-widget>
 </dashboard>
 <live-window>

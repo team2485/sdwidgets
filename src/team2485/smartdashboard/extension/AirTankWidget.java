@@ -87,10 +87,7 @@ public class AirTankWidget extends Widget {
     @Override
     public void setValue(Object o) {
         if (prop.getValue().equals(true)) {
-            //System.out.println(value * ((double) propval.getValue()));
             value = (value * ((double) propval.getValue())) + (((Number) o).doubleValue() * (1 - ((double) propval.getValue())));
-
-            //System.out.println((value));
         } else {
             value = ((Number) o).doubleValue();
         }
@@ -98,38 +95,9 @@ public class AirTankWidget extends Widget {
         repaint();
     }
 
-//    private Color RotateColorCW(Color color){
-//        int R;
-//        int G;
-//        int B;
-//        B = color.getRed();
-//        R = color.getGreen();
-//        G = color.getBlue();
-//        color = (new java.awt.Color(R, G, B));
-//        return color;
-//    }
-//    private Color RotateColorCCW(Color color){
-//        int R;
-//        int G;
-//        int B;
-//        B = color.getGreen();
-//        R = color.getBlue();
-//        G = color.getRed();
-//        color = (new java.awt.Color(R, G, B));
-//        return color;
-//    }
-//    private Color InvertColor(Color color){
-//        int R = (255-color.getRed());
-//        int G = (255-color.getGreen());
-//        int B = (255-color.getBlue());
-//
-//        color = (new java.awt.Color(R, G, B));
-//        return color;
-//    }
     @Override
     protected void paintComponent(final Graphics gg) {
         X = (int) Math.min(getWidth(), getHeight() * 1.7);
-        //this.setSize(X, getHeight());
         timerCounter++;
         if (value <= 60 || value > 150) {
             R = 40 + Math.abs(30 * (timerCounter % 5));
@@ -155,8 +123,6 @@ public class AirTankWidget extends Widget {
         }
         color = (new java.awt.Color(((int) R), ((int) G), ((int) B)));
         color = color.brighter();
-        //color = color.brighter();
-        //color = color.brighter();
         if (timerCounter > 3) {
             timerCounter = -3;
         }
@@ -179,7 +145,6 @@ public class AirTankWidget extends Widget {
                     stylemulti1 = (X / 2) * (0.24285714285);
                     stylemulti2 = (X / 2) * (0.47285714285);
 
-                    //System.out.println(stylemulti1 + " " + stylemulti2);
                     g.setColor(color);
                     g.fillRoundRect(X / 10, (int) stylemulti1, drawWidth, (int) stylemulti2, X / 15, X / 15);
 
@@ -275,7 +240,7 @@ public class AirTankWidget extends Widget {
 
             }
 
-            //g.drawString("." + (int)value%1 , (int)(X + (g.getFontMetrics(new Font("Ubuntu",Font.BOLD,(X/8))).stringWidth(text)))/2, (int)(X/1.97) + g.getFontMetrics().getHeight());
+            
         }
 
     }
