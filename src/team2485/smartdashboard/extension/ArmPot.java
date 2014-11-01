@@ -112,7 +112,7 @@ public class ArmPot extends Widget {
     @Override
     public void setValue(Object o) {
         final String[] vals = ((String) o).split(",");
-        offset = (int) (Double.parseDouble(vals[0]) + 48);
+        offset = (int) (Double.parseDouble(vals[0]));
         rawVal = (int) Double.parseDouble(vals[1]);
         length = (int) smoothingfactor.getValue();
         if (length > preVal.length) {
