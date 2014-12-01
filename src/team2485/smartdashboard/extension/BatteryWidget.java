@@ -1,50 +1,71 @@
 package team2485.smartdashboard.extension;
 
 import edu.wpi.first.smartdashboard.gui.*;
+import edu.wpi.first.smartdashboard.properties.BooleanProperty;
+import edu.wpi.first.smartdashboard.properties.IntegerProperty;
 import edu.wpi.first.smartdashboard.properties.Property;
 import edu.wpi.first.smartdashboard.types.DataType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.*;
 
 public class BatteryWidget extends Widget {
-    public static final String NAME = "Battery Widget";
-    public static final DataType[] TYPES = { DataType.NUMBER };
 
-    private static final double MAX_VOLTAGE = 13, MIN_VOLTAGE = 11;
-    private static final int MAX_DRAW_WIDTH = 110;
+    public static final String NAME = "Battery Widget";
+    public static final DataType[] TYPES = {DataType.NUMBER};
+
+    private static final double MAX_VOLTAGE = 12.5, MIN_VOLTAGE = 7;
+
+    private Font font;
+    private Font fontS;
+
+    private String text;
 
     private double value = 0;
     private int drawWidth = 0;
+    private int X;
     private Color color;
 
     private BufferedImage battery;
-    private JLabel label;
+    private BufferedImage battery2;
+
+    private final Property style = new IntegerProperty(this, "Style (0 - 2)", 2);
+    private final Property test = new BooleanProperty(this, "Test", false);
 
     @Override
     public void init() {
         try {
             battery = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/battery.png"));
-        } catch (IOException e) { }
+            battery2 = ImageIO.read(getClass().getResourceAsStream("/team2485/smartdashboard/extension/res/battery2.png"));
+        } catch (IOException e) {
+        }
 
-        final Dimension size = new Dimension(144, 83);
+        final Dimension size = new Dimension(300, 150);
         this.setSize(size);
         this.setPreferredSize(size);
-        this.setMinimumSize(size);
-        this.setMaximumSize(size);
+        this.setMinimumSize(new Dimension(10, 5));
+        this.setMaximumSize(new Dimension(4000, 2000));
+        this.setValue(10);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                    }
+                    if ((boolean) test.getValue()) {
 
-        final BorderLayout layout = new BorderLayout(0, 0);
-        this.setLayout(layout);
-
-        this.add(new BatteryPanel(), BorderLayout.CENTER);
-
-        label = new JLabel("unknown");
-        label.setFont(new Font("Ubuntu", Font.PLAIN, 14));
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setForeground(Color.white);
-        this.add(label, BorderLayout.SOUTH);
+                        value += .1;
+                        setValue(value);
+                        if (value > 16) {
+                            value = 0;
+                        }
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -53,34 +74,66 @@ public class BatteryWidget extends Widget {
 
     @Override
     public void setValue(Object o) {
-        value = ((Number)o).doubleValue();
-        drawWidth = (int)((value - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE) * MAX_DRAW_WIDTH);
+        X = (int) Math.min(getWidth(), getHeight() * 1.7);
+        value = ((Number) o).doubleValue();
 
-        if (value > 12.3) color = Color.green;
-        else if (value > 12) color = Color.orange;
-        else color = Color.red;
+        if (value > 12.3) {
+            color = Color.green;
+        } else if (value > 12) {
+            color = Color.orange;
+        } else {
+            color = Color.red;
+        }
 
-        label.setText(String.format("%.2f volts", value));
-        label.setForeground(value > 12 ? Color.white : Color.red);
+        text = (String.format("%.2f", value));
 
         repaint();
     }
 
-    private class BatteryPanel extends JPanel {
-        public BatteryPanel() {
-        }
+    @Override
+    protected void paintComponent(final Graphics gg) {
+        final Graphics2D g = (Graphics2D) gg;
+        System.out.println(X);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        @Override
-        protected void paintComponent(final Graphics gg) {
-            final Graphics2D g = (Graphics2D)gg;
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            g.drawImage(battery, 0, 0, this);
-
-            if (drawWidth > 0) {
+        switch ((int) style.getValue()) {
+            case 0:
+                if (value < MAX_VOLTAGE) {
+                    drawWidth = (int) ((value - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE) * 110);
+                } else {
+                    drawWidth = (int) (110);
+                }
+                g.drawImage(battery, 0, 0, this);
+                g.setFont(new Font("Ubuntu", Font.PLAIN, 15));
                 g.setColor(color);
-                g.fillRoundRect(13, 13, drawWidth, 41, 8, 8);
-            }
+                if (drawWidth > 0) {
+                    g.fillRoundRect(13, 13, drawWidth, 41, 8, 8);
+                }
+                g.drawString(text, 72 - g.getFontMetrics().stringWidth(text) / 2, 80);
+                break;
+            case 1:
+                g.setColor(color);
+                if (value < MAX_VOLTAGE) {
+                    drawWidth = (int) ((value - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE) * X * .75);
+                } else {
+                    drawWidth = (int) (X * .75);
+                }
+                if (drawWidth
+                        > 0) {
+                    g.fillRoundRect((int) (X * .11), (int) (X * .05), drawWidth, (int) (X * .325), 0, 0);
+                }
+                font = new Font("BOOMBOX", Font.BOLD, (X / 10));
+                fontS = new Font("BOOMBOX", Font.BOLD, (X / 17));
+
+                g.setFont(font);
+
+                g.drawString(text, X / 2 - g.getFontMetrics().stringWidth(text) / 2, X / 2);
+                g.setFont(fontS);
+                g.drawString("V", X * 5 / 11 + g.getFontMetrics(font).stringWidth(text) - g.getFontMetrics().stringWidth("V"), X * 19 / 40);
+                g.drawImage(battery2, 0, 0, X, (int) (X * .42), this);
+
+                break;
         }
+
     }
 }

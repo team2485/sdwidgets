@@ -25,14 +25,15 @@ public class AutoChooser extends StaticWidget implements IRemoteConnectionListen
     public static final DataType[] TYPES = { DataType.NUMBER };
     private static final String FIELD_NAME = "autoMode";
 
-    private static final String[] MODES = new String[7];
-    private static final int[] CODES = new int[7];
+    private static final String[] MODES = new String[8];
+    private static final int[] CODES = new int[8];
     static {
         MODES[0] = "Forward";           CODES[0] = 0;
         MODES[1] = "One Ball Left";     CODES[1] = 3;
         MODES[2] = "One Ball Right";    CODES[2] = 4;
         MODES[3] = "Two Ball No Hot";   CODES[3] = 14;
         MODES[4] = "Two Ball Hot";      CODES[4] = 12;
+        MODES[7] = "Two Ball Goalie";   CODES[7] = 16;
         MODES[5] = "Three Ball No Hot"; CODES[5] = 13;
         MODES[6] = "Three Ball Hot";    CODES[6] = 15;
     }
